@@ -276,7 +276,7 @@ smallFSPLImage = (reshape(lossdB,meshNode.vert.num, meshNode.horz.num));
 FSPLFullImage = (imresize(smallFSPLImage,[size(floorPlan,1),size(floorPlan,2)],'method','cubic'));
 % Converts to a num 0.0-1.0 high is the strongest signal
 FSPLFullImage = mat2gray(FSPLFullImage);
-figure('Name','Path loss method ');
+figure('Name',['Path loss method ');
 z = imoverlay(FSPLFullImage,~originalFloorPlan,[0,0,0]);
 imshow(rgb2gray(z))
 colormap(gca,'jet');
