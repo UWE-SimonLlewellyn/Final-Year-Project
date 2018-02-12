@@ -1,0 +1,62 @@
+__________________________________________________________
+MAPPING
+----------------------------------------
+Currently only allows for single transmission points. 
+Need to make loop to calculate different points. 
+make a map for each distance from transmission pont 
+
+T1
+-------------------------
+| 2 | 1 | 2 | 3 | 4 | 5 |
+-------------------------
+| 1 | T | 1 | 2 | 3 | 4 |
+-------------------------
+| 2 | 1 | 2 | 3 | 4 | 5 |
+-------------------------
+
+T2
+-------------------------
+| 5 | 4 | 3 | 2 | 1 | 2 |
+-------------------------
+| 4 | 3 | 2 | 1 | T | 1 |
+-------------------------
+| 5 | 4 | 3 | 2 | 1 | 2 |
+-------------------------
+
+TA
+-------------------------
+| 7 | 5  | 5 | 5 | 5  | 7 |
+-------------------------
+| 5 | T3 | 3 | 3 | T3 | 5 |
+-------------------------
+| 7 | 5  | 5 | 5 | 5  | 7 |
+-------------------------
+
+
+TA 
+-------------------------
+| 2 | 1 | 2 | 2 | 1 | 2 |
+-------------------------
+| 1 | T | 1 | 1 | T | 1 |
+-------------------------
+| 2 | 1 | 2 | 2 | 1 | 2 |
+-------------------------
+
+T1 + T2 = f(TT) ?? = TA
+
+
+Details
+-------------------------------
+Map details cause inaccurate readings 
+e.g. showing stairs provides extra wall
+more design is needed to accuratly represent these features. 
+
+__________________________________________________
+SCORING 
+---------------------------
+Scoring can be completed using the values of the following tables
+ 
+FSPLFullImage - 2d array showing signal value -dbs // most accurate for scoring. 
+smallFSPLImage - shows the values for the distance from the transmission for the mesh nodes
+
+scoring is Sum of array / num of location in the array
