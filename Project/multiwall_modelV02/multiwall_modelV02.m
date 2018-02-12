@@ -53,8 +53,7 @@ RxAntennaGain           = TxAntennaGain;    % Gain of Receiving antenna
 
 % Added vars for UWE work
 %-------------------------------------------
-noOfTx = 1;     % defalt is set to 1 will be changed at prompt later 
-% ---------------------------------------------
+noOfTx = 0;     % defalt is set to 0 will be changed at prompt later 
 
 % for distance calculator
 meshNode.vert.num       = 40;             % Number of probs in the structure increase for better accuracy
@@ -168,6 +167,8 @@ if meshingMethod == 2
         floor(linspace(1,size(floorPlanBW,2),meshNode.horz.num))) = 1;
 end
 
+[floorPlanGray,countedWalls] = autoWallDetection(~originalFloorPlan,wallAt,demoMode,thetaRes,minWallLength,fillGap); % Detecting all the walls Generates floorPlanGray where different wall are index coded in the gray image
+
 %% Locating The Transmitter.
 
 noOfTx = input('How many transmitters: ');
@@ -241,7 +242,7 @@ end
 % % 2- COST 231 Model %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if pathLossModel == 2
-    [floorPlanGray,countedWalls] = autoWallDetection(~originalFloorPlan,wallAt,demoMode,thetaRes,minWallLength,fillGap); % Detecting all the walls Generates floorPlanGray where different wall are index coded in the gray image
+ 
 % % LOS & Walls Determination
     % Thining the floor plan. Only one pixel per wall should intersect with LOS  
     thinFloorPlanBW = ~ originalFloorPlan;
@@ -254,13 +255,13 @@ if pathLossModel == 2
 
     losTemp = zeros(size(thinFloorPlanBW));
     wallsType = cell(size(Rxr,1),1); % pre-defining
-    numWalls = zeros(size(Rxr,1),1);
-    tempLossdB = zeros(size(Rxr,1),1);
+    numWalls = zeros(size(Rxr,1),1);    
     lossdB = zeros(size(Rxr,1),1);
     
     for h = 1:noOfTx
         Txc = tableA(h,1);  
         Txr = tableA(h,2);
+        tempLossdB = zeros(size(Rxr,1),1);
         for i = 1:numel(Rxr)
             [losC{i},losR{i}] = bresenham(Txc,Txr,Rxc(i),Rxr(i)); %LOS between Tx &Rx
             for j = 1:numel(losC{i}(:))
@@ -286,10 +287,9 @@ if pathLossModel == 2
         if h==1
             lossdB = tempLossdB;
         else
-            temptemp = numel(tempLossdB);
-            for m = 1:temptemp
-                if tempLossdB(m) <  lossdB(m)
-                    lossdB(m) = tempLossdB(m); % var that is passed though to the rest 
+            for m = 1:numel(tempLossdB)
+                if tempLossdB(m,1) >  lossdB(m,1)
+                    lossdB(m,1) = tempLossdB(m,1); % var that is passed though to the rest 
                 end
             end       
         end % if h==1
@@ -297,11 +297,7 @@ if pathLossModel == 2
     end % for h = 1:noOfTx
 end % if pathLossModel == 2
 
-%% Merging of multple maps 
-% created Jan '18 by Simon Llewellyn
-% compares value of multuiple 2D arrays and keeps the lowest values
-
-
+disp('Before map');
     
 %% Applying color map    
 % smallFSPLImage = mesh map values from transmission point
