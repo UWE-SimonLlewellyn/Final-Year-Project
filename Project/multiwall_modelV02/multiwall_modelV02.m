@@ -250,24 +250,28 @@ for h = 1:noOfTx
         tempLossdB(i) = ((20 * log10(4*pi.*nodeDistance(i).*freq./lightVel) .* (nodeDistance(i) > d0Cost231)) + ((nodeDistance(i) < d0Cost231) .* 20 * log10(4*pi.*d0Cost231.*freq./lightVel)) ) ...
             + abs(wallLoss);
             tempLossdB(i) = TxPower - tempLossdB(i) + RxAntennaGain + TxAntennaGain;
-
+        if h> 1
+            if tempLossdB(i,1) >  lossdB(i,1)
+                lossdB(i,1) = tempLossdB(i,1); % var that is passed though to the rest 
+            end
+        end  
         losTemp = zeros(size(thinFloorPlanBW)); % clears the LOS image
     end
 
     if h==1
         lossdB = tempLossdB;
-    else
-        for m = 1:numel(tempLossdB)
-            if tempLossdB(m,1) >  lossdB(m,1)
-                lossdB(m,1) = tempLossdB(m,1); % var that is passed though to the rest 
-            end
-        end       
+%     else
+%         for m = 1:numel(tempLossdB)
+%             if tempLossdB(m,1) >  lossdB(m,1)
+%                 lossdB(m,1) = tempLossdB(m,1); % var that is passed though to the rest 
+%             end
+%         end       
     end % if h==1
 
 end % for h = 1:noOfTx
 
 % crude fitness score
-fitness = sum(lossdB)./m;
+fitness = sum(lossdB)./numel(Rxr);
 disp(fitness);
     
 %% Applying color map    
