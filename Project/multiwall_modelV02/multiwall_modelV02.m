@@ -214,60 +214,61 @@ end
 % %  COST 231 Model %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % % LOS & Walls Determination
-    % Thining the floor plan. Only one pixel per wall should intersect with LOS  
-    thinFloorPlanBW = ~ originalFloorPlan;
-    thinFloorPlanBW = bwmorph(thinFloorPlanBW,'thin','inf');
-    thinFloorPlanBW = bwmorph(thinFloorPlanBW,'diag');
+% Thining the floor plan. Only one pixel per wall should intersect with LOS  
+thinFloorPlanBW = ~ originalFloorPlan;
+thinFloorPlanBW = bwmorph(thinFloorPlanBW,'thin','inf');
+thinFloorPlanBW = bwmorph(thinFloorPlanBW,'diag');
 
 
-    losC = cell(size(Rxr,1),1);
-    losR = cell(size(Rxr,1),1);
+losC = cell(size(Rxr,1),1);
+losR = cell(size(Rxr,1),1);
 
-    losTemp = zeros(size(thinFloorPlanBW));
-    wallsType = cell(size(Rxr,1),1); % pre-defining
-    numWalls = zeros(size(Rxr,1),1);    
-    lossdB = zeros(size(Rxr,1),1);
-    
-    for h = 1:noOfTx
-        Txc = tableA(h,1);  
-        Txr = tableA(h,2);
-        tempLossdB = zeros(size(Rxr,1),1);
-        for i = 1:numel(Rxr)
-            [losC{i},losR{i}] = bresenham(Txc,Txr,Rxc(i),Rxr(i)); %LOS between Tx &Rx
-            for j = 1:numel(losC{i}(:))
-                losTemp(losR{i}(j),losC{i}(j)) = 1; % temporary line of sight image
-            end
-            [wallsLable,numWalls(i)] = bwlabel(losTemp .* thinFloorPlanBW,8); % find intersection of LOS and walls
-            wallsLable = bwmorph(wallsLable,'shrink','inf');
-            wallsType{i} = unique(double(floorPlanGray).*wallsLable);  % type of the walls (grayscale) between each Tx to Rx
+losTemp = zeros(size(thinFloorPlanBW));
+wallsType = cell(size(Rxr,1),1); % pre-defining
+numWalls = zeros(size(Rxr,1),1);    
+lossdB = zeros(size(Rxr,1),1);
 
-            % calculating the total wall attenuation for each beam
-            wallLoss = 0;
-            for k = 2:numel(wallsType{i})
-                wallLoss =  wallAt(wallsType{i}(k)) + wallLoss;
-            end
-            % Calculating the signal strength
-            tempLossdB(i) = ((20 * log10(4*pi.*nodeDistance(i).*freq./lightVel) .* (nodeDistance(i) > d0Cost231)) + ((nodeDistance(i) < d0Cost231) .* 20 * log10(4*pi.*d0Cost231.*freq./lightVel)) ) ...
-                + abs(wallLoss);
-                tempLossdB(i) = TxPower - tempLossdB(i) + RxAntennaGain + TxAntennaGain;
-                
-            losTemp = zeros(size(thinFloorPlanBW)); % clears the LOS image
+for h = 1:noOfTx
+    Txc = tableA(h,1);  
+    Txr = tableA(h,2);
+    tempLossdB = zeros(size(Rxr,1),1);
+    for i = 1:numel(Rxr)
+        [losC{i},losR{i}] = bresenham(Txc,Txr,Rxc(i),Rxr(i)); %LOS between Tx &Rx
+        for j = 1:numel(losC{i}(:))
+            losTemp(losR{i}(j),losC{i}(j)) = 1; % temporary line of sight image
         end
-        
-        if h==1
-            lossdB = tempLossdB;
-        else
-            for m = 1:numel(tempLossdB)
-                if tempLossdB(m,1) >  lossdB(m,1)
-                    lossdB(m,1) = tempLossdB(m,1); % var that is passed though to the rest 
-                end
-            end       
-        end % if h==1
-        
-    end % for h = 1:noOfTx
+        [wallsLable,numWalls(i)] = bwlabel(losTemp .* thinFloorPlanBW,8); % find intersection of LOS and walls
+        wallsLable = bwmorph(wallsLable,'shrink','inf');
+        wallsType{i} = unique(double(floorPlanGray).*wallsLable);  % type of the walls (grayscale) between each Tx to Rx
 
+        % calculating the total wall attenuation for each beam
+        wallLoss = 0;
+        for k = 2:numel(wallsType{i})
+            wallLoss =  wallAt(wallsType{i}(k)) + wallLoss;
+        end
+        % Calculating the signal strength
+        tempLossdB(i) = ((20 * log10(4*pi.*nodeDistance(i).*freq./lightVel) .* (nodeDistance(i) > d0Cost231)) + ((nodeDistance(i) < d0Cost231) .* 20 * log10(4*pi.*d0Cost231.*freq./lightVel)) ) ...
+            + abs(wallLoss);
+            tempLossdB(i) = TxPower - tempLossdB(i) + RxAntennaGain + TxAntennaGain;
 
-disp('Before map');
+        losTemp = zeros(size(thinFloorPlanBW)); % clears the LOS image
+    end
+
+    if h==1
+        lossdB = tempLossdB;
+    else
+        for m = 1:numel(tempLossdB)
+            if tempLossdB(m,1) >  lossdB(m,1)
+                lossdB(m,1) = tempLossdB(m,1); % var that is passed though to the rest 
+            end
+        end       
+    end % if h==1
+
+end % for h = 1:noOfTx
+
+% crude fitness score
+fitness = sum(lossdB)./m;
+disp(fitness);
     
 %% Applying color map    
 % smallFSPLImage = mesh map values from transmission point
