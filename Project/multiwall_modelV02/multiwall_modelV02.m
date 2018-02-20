@@ -85,6 +85,37 @@ end
 floorPlan = imread([filePath,fileName]);
 floorPlanBW = ~im2bw(floorPlan);
 
+
+
+% Centre of grid squares using the starting x,y cordinates 
+TxGrid =  zeros(10,2);
+tempX = size(floorPlanBW,1)./10;
+tempY = size(floorPlanBW,2)./10;
+
+for i =1:10
+    if i==1
+        TxGridCentre(i,:) = [tempX./2,tempY./2];
+    else
+        
+         TxGridCentre(i,:) = [ (TxGridCentre(i-1,1)+ tempX), (TxGridCentre(i-1,2) + tempY)];
+    end   
+    
+end
+
+
+TxGridCentre =  zeros(10,2);
+for i =1:10
+    if i==1
+        TxGridCentre(i,:) = [tempX./2,tempY./2];
+    else
+        
+         TxGridCentre(i,:) = [ (TxGridCentre(i-1,1)+ tempX), (TxGridCentre(i-1,2) + tempY)];
+    end   
+    
+end
+
+
+
 % adjusting the image if required
 try
     [co,bi] = imhist(floorPlanBW);
@@ -158,6 +189,7 @@ noOfTx = input('How many transmitters: ');
 
 tableA =  zeros(noOfTx,2);
 str = cell(noOfTx,1);
+
 for i = 1:noOfTx
     P = imoverlay(P,floorMesh,[1,0,0]);
     imshow(P)
