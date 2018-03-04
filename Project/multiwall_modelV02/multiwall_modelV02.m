@@ -73,7 +73,11 @@ wallAt(255) = round(sum(wallAt)./sum(wallAt>0));  % This is for intersecting wal
 % Added vars for UWE work
 %-------------------------------------------
 noOfTx = 0;     % defalt is set to 0 will be changed at prompt later
-% path
+
+% needed for AI algorithm
+fitness = -100; 
+
+% calculate scale of diagram
 pathLength = 5; % meters
 pathPixels = 110; % pixles or  
 pathUnit = pathLength./pathPixels; %pathUnit = meter per pixel
@@ -141,8 +145,8 @@ end
 
 
  %% Plan Calibration
- % commented out to remove the need to adjust size of map to make fair
- % tests
+ % commented out to remove the need to adjust size of map to allow for fair
+ % comparisions
 % % Getting 2 points from image for calibration
 % disp('Select two points from walls to calibrate the plan!'); 
 % while 1
@@ -163,7 +167,7 @@ end
 %     [r,c] = ginput(1); % get points one by one. Check each to be a- hit not miss
 %     R(2,1) = round(r);
 %     C(2,1) = round(c);
-%     if ~floorPlanBW(C(2,1),R(2,1))
+%     if ~floorPlanBW(C(2,1),R(2,1)) % detects if point hit wall
 %         break % if its a hit it stops
 %     end
 % end
@@ -195,7 +199,6 @@ floorMesh(floor(linspace(1,size(floorPlanBW,1),meshNode.vert.num)),...
 noOfTx = input('How many transmitters: ');
 
 tableA =  zeros(noOfTx,2);
-str = cell(noOfTx,1);
 
 for i = 1:noOfTx
   %  P = imoverlay(P,floorMesh,[1,0,0]); % orginal line when asked for 2
@@ -210,20 +213,14 @@ for i = 1:noOfTx
         tableA(i,:) = [Txc,Txr];
     catch
     end    
-    str = cell(noOfTx);  % convert value to string
-  %  text(tableA(i,1),tableA(i,2),str,'Color','Black','FontSize',12); % locating the Transmitter
-    % text(Txc,Txr,str,'Color','Black','FontSize',12); % locating the Transmitter
     
 end
-% text(Txc,Txr,str,'Color','Black','FontSize',12); % locating ALL the Transmitter
+
 %% Calculating mesh points distance from Tx
 % 
 % AMEND THIS TO CALC DISTANCE FROM MULTIPLE POINTS
 %
 
-% dRxTxr = zeros(noOfTx,1);
-% dRxTxc = zeros(noOfTx,1);
-% nodeDistance2= cell(noOfTx,1);
 for i = 1:noOfTx
     Txc = tableA(i,1);  
     Txr = tableA(i,2);
@@ -231,7 +228,7 @@ for i = 1:noOfTx
     dRxTxr = Rxr - Txr; % distance in terms of pixels
     dRxTxc = Rxc - Txc; % distance in terms of pixels 
     tempNodeDistance = sqrt(dRxTxr.^2 + dRxTxc.^2) * pathUnit; % distance in terms of meters
-  %  nodeDistance2(i,1) = {tempNodeDistance};  
+
     
     if i==1
         nodeDistance = tempNodeDistance;
@@ -244,12 +241,6 @@ for i = 1:noOfTx
     end    
 end
 
-
-
-    if demoMode == 1 % Shows a map with printed distances from node
-        text(Rxc,Rxr,num2str(int32(nodeDistance)),'FontSize',7)
-        title('Distance Map')
-    end
 
 %% Indoor Propagation Models
 % %  COST 231 Model %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -291,7 +282,7 @@ for h = 1:noOfTx
         tempLossdB(i) = ((20 * log10(4*pi.*nodeDistance(i).*freq./lightVel) .* (nodeDistance(i) > d0Cost231)) + ((nodeDistance(i) < d0Cost231) .* 20 * log10(4*pi.*d0Cost231.*freq./lightVel)) ) ...
             + abs(wallLoss);
             tempLossdB(i) = TxPower - tempLossdB(i) + RxAntennaGain + TxAntennaGain;
-        if h> 1
+        if h > 1
             if tempLossdB(i,1) >  lossdB(i,1)
                 lossdB(i,1) = tempLossdB(i,1); % var that is passed though to the rest 
             end
@@ -312,7 +303,10 @@ for h = 1:noOfTx
 end % for h = 1:noOfTx
 
 % crude fitness score
-fitness = sum(lossdB)./numel(Rxr);
+tempFitness = sum(lossdB)./numel(Rxr);
+if tempFitness > fitness
+    fitness = tempFitness;
+end
 disp(fitness);
     
 %% Applying color map    
