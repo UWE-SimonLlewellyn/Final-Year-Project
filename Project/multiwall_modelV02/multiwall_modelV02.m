@@ -73,6 +73,10 @@ wallAt(255) = round(sum(wallAt)./sum(wallAt>0));  % This is for intersecting wal
 % Added vars for UWE work
 %-------------------------------------------
 noOfTx = 0;     % defalt is set to 0 will be changed at prompt later
+% path
+pathLength = 5; % meters
+pathPixels = 110; % pixles or  
+pathUnit = pathLength./pathPixels; %pathUnit = meter per pixel
 
 %% Reading the image
 % Converts the images into a 2D array that indicates
@@ -104,7 +108,7 @@ floorPlanBW = ~imdilate(~floorPlanBW,strel('disk',2));
 figure
 imshow(floorPlanBW,'InitialMagnification',100);
 title('Floor Plan');
-disp('Select two points from walls to calibrate the plan!');
+
 
 %% Creating Grid for placement
 
@@ -136,39 +140,42 @@ for i =1:GridSize
 end
 
 
-%% Plan Calibration
-% Getting 2 points from image for calibration
-while 1
-    disp('Select the 1st point')
-    try
-        [r,c] = ginput(1); % get points one by one. Check each to be a- hit not miss
-        R(1,1)= round(r);
-        C(1,1) = round(c);
-    catch
-    end
-    if ~floorPlanBW(C(1,1),R(1,1))
-        break % if its a hit it stops
-    end
-end
-
-while 1
-    disp('Select the 2nd point')
-    [r,c] = ginput(1); % get points one by one. Check each to be a- hit not miss
-    R(2,1) = round(r);
-    C(2,1) = round(c);
-    if ~floorPlanBW(C(2,1),R(2,1))
-        break % if its a hit it stops
-    end
-end
-% Finding shortest path betweent the two points
-calibPath = shortestPath(imcomplement(floorPlanBW),R,C);
-P = imoverlay(floorPlanBW,calibPath,[0,1,0]);
-
-% Calibrating pixel per meter
-pathPixels = sum(sum(calibPath));
-pathLength = input('Length of calibration path in meters: ');
-pathUnit = pathLength./pathPixels; %pathUnit meter per pixel
-
+ %% Plan Calibration
+ % commented out to remove the need to adjust size of map to make fair
+ % tests
+% % Getting 2 points from image for calibration
+% disp('Select two points from walls to calibrate the plan!'); 
+% while 1
+%     disp('Select the 1st point')
+%     try
+%         [r,c] = ginput(1); % get points one by one. Check each to be a- hit not miss
+%         R(1,1)= round(r);
+%         C(1,1) = round(c);
+%     catch
+%     end
+%     if ~floorPlanBW(C(1,1),R(1,1))
+%         break % if its a hit it stops
+%     end
+% end
+% 
+% while 1
+%     disp('Select the 2nd point')
+%     [r,c] = ginput(1); % get points one by one. Check each to be a- hit not miss
+%     R(2,1) = round(r);
+%     C(2,1) = round(c);
+%     if ~floorPlanBW(C(2,1),R(2,1))
+%         break % if its a hit it stops
+%     end
+% end
+% % Finding shortest path betweent the two points
+% calibPath = shortestPath(imcomplement(floorPlanBW),R,C);
+% P = imoverlay(floorPlanBW,calibPath,[0,1,0]);
+% 
+% % Calibrating pixel per meter
+% pathPixels = sum(sum(calibPath));
+% pathLength = input('Length of calibration path in meters: ');
+% 
+% pathUnit = pathLength./pathPixels; %pathUnit = meter per pixel
 
 %% Meshing the Floor Plan
 % Mesh is where plot points are added to the image to to help loss
@@ -191,7 +198,9 @@ tableA =  zeros(noOfTx,2);
 str = cell(noOfTx,1);
 
 for i = 1:noOfTx
-    P = imoverlay(P,floorMesh,[1,0,0]);
+  %  P = imoverlay(P,floorMesh,[1,0,0]); % orginal line when asked for 2
+  %  point length calibration
+  P = imoverlay(floorPlanBW,floorMesh,[1,0,0]);
     imshow(P)
     title('Click to locate the transmitter');
     try
