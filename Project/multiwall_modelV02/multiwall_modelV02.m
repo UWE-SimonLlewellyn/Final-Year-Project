@@ -80,7 +80,7 @@ noOfTx = 0;     % defalt is set to 0 will be changed at prompt later
 fitness = -100; 
 
 % calculate scale of diagram
-pathLength = 5; % meters
+pathLength = 15; % meters
 pathPixels = 110; % pixles or  
 pathUnit = pathLength./pathPixels; %pathUnit = meter per pixel
 
@@ -199,29 +199,12 @@ floorMesh(floor(linspace(1,size(floorPlanBW,1),meshNode.vert.num)),...
 %% Locating The Transmitter.
 % 
 noOfTx = 4;% input('How many transmitters: ');
+rand= randi([1,10],noOfTx,2);
 
 tableA =  zeros(noOfTx,2);
 
-% for i = 1:noOfTx
-%   %  P = imoverlay(P,floorMesh,[1,0,0]); % orginal line when asked for 2
-%   %  point length calibration
-%   P = imoverlay(floorPlanBW,floorMesh,[1,0,0]);
-%     imshow(P)
-%     title('Click to locate the transmitter');
-%     try
-%         % ginput is the mouse courseer input needs to be changed for input
-%         % for Algorithm
-%         [Txc,Txr] = ginput(1);
-%         tableA(i,:) = [Txc,Txr];
-%     catch
-%     end    
-%     
-% end
-% disp(tableA);
-%RANDOM WORKS WITH 1 TX NOT 2
-% possibly due to centre point being on a wall.
-rand= randi([1,10],noOfTx,2);
 
+%
 for i = 1:noOfTx
      tableA(i,:) = [TxGridCentre(:,2,rand(i,1),rand(i,2)),TxGridCentre(:,1,rand(i,1),rand(i,2))];
 end
