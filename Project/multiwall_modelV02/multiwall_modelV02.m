@@ -198,7 +198,7 @@ floorMesh(floor(linspace(1,size(floorPlanBW,1),meshNode.vert.num)),...
 
 %% Locating The Transmitter.
 % 
-noOfTx = 2;% input('How many transmitters: ');
+noOfTx = 4;% input('How many transmitters: ');
 
 tableA =  zeros(noOfTx,2);
 
@@ -217,15 +217,15 @@ tableA =  zeros(noOfTx,2);
 %     end    
 %     
 % end
-
+% disp(tableA);
 %RANDOM WORKS WITH 1 TX NOT 2
 % possibly due to centre point being on a wall.
 rand= randi([1,10],noOfTx,2);
 
 for i = 1:noOfTx
-     tableA(i,:) = [TxGridCentre(:,1,rand(i,1),rand(i,2)),TxGridCentre(:,2,rand(i,1),rand(i,2))];
+     tableA(i,:) = [TxGridCentre(:,2,rand(i,1),rand(i,2)),TxGridCentre(:,1,rand(i,1),rand(i,2))];
 end
-
+disp(tableA);
 %% End point of the Algorithm 
 [fitness,lossdB] = prop(tableA,floorMesh,pathUnit,originalFloorPlan,floorPlanGray,wallAt,noOfTx,fitness);
 disp("final solution " + fitness);
