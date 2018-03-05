@@ -111,9 +111,9 @@ originalFloorPlan = floorPlanBW; % At this point, Structure in Original Image an
 
 % Optional delation of the image to make wall selection easier
 floorPlanBW = ~imdilate(~floorPlanBW,strel('disk',2));
-figure
-imshow(floorPlanBW,'InitialMagnification',100);
-title('Floor Plan');
+% figure
+% imshow(floorPlanBW,'InitialMagnification',100);
+% title('Floor Plan');
 
 
 %% Creating Grid for placement
@@ -197,32 +197,38 @@ floorMesh(floor(linspace(1,size(floorPlanBW,1),meshNode.vert.num)),...
 [floorPlanGray,countedWalls] = autoWallDetection(~originalFloorPlan,wallAt,demoMode,thetaRes,minWallLength,fillGap); % Detecting all the walls Generates floorPlanGray where different wall are index coded in the gray image
 
 %% Locating The Transmitter.
-
-noOfTx = input('How many transmitters: ');
+% 
+noOfTx = 2;% input('How many transmitters: ');
 
 tableA =  zeros(noOfTx,2);
 
+% for i = 1:noOfTx
+%   %  P = imoverlay(P,floorMesh,[1,0,0]); % orginal line when asked for 2
+%   %  point length calibration
+%   P = imoverlay(floorPlanBW,floorMesh,[1,0,0]);
+%     imshow(P)
+%     title('Click to locate the transmitter');
+%     try
+%         % ginput is the mouse courseer input needs to be changed for input
+%         % for Algorithm
+%         [Txc,Txr] = ginput(1);
+%         tableA(i,:) = [Txc,Txr];
+%     catch
+%     end    
+%     
+% end
+
+%RANDOM WORKS WITH 1 TX NOT 2
+% possibly due to centre point being on a wall.
+rand= randi([1,10],noOfTx,2);
+
 for i = 1:noOfTx
-  %  P = imoverlay(P,floorMesh,[1,0,0]); % orginal line when asked for 2
-  %  point length calibration
-  P = imoverlay(floorPlanBW,floorMesh,[1,0,0]);
-    imshow(P)
-    title('Click to locate the transmitter');
-    try
-        % ginput is the mouse courseer input needs to be changed for input
-        % for Algorithm
-        [Txc,Txr] = ginput(1);
-        tableA(i,:) = [Txc,Txr];
-    catch
-    end    
-    
+     tableA(i,:) = [TxGridCentre(:,1,rand(i,1),rand(i,2)),TxGridCentre(:,2,rand(i,1),rand(i,2))];
 end
 
-
-
 %% End point of the Algorithm 
-[fitness,lossdB] = prop(tableA,floorMesh,pathUnit,originalFloorPlan,floorPlanGray,wallAt,noOfTx,fitness)
-disp(fitness,0);
+[fitness,lossdB] = prop(tableA,floorMesh,pathUnit,originalFloorPlan,floorPlanGray,wallAt,noOfTx,fitness);
+disp("final solution " + fitness);
     
 %% Applying color map    
 % smallFSPLImage = mesh map values from transmission point
