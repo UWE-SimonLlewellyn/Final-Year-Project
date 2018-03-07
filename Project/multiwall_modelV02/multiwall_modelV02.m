@@ -198,20 +198,43 @@ floorMesh(floor(linspace(1,size(floorPlanBW,1),meshNode.vert.num)),...
 
 %% Locating The Transmitter.
 % 
-noOfTx = 4;% input('How many transmitters: ');
-rand= randi([1,10],noOfTx,2);
+bestTX = 1;
+[Rxr,Rxc] = find(floorMesh == 1); 
+lossdB = zeros(size(Rxr,1),1);
+lossdB(:) = -1000;
+bestAvg = sum(lossdB./bestTX);
+for t1 = 1:30
+    noOfTx = randi([1,10]);%4;% input('How many transmitters: ');
+    rand= randi([1,10],noOfTx,2);
 
-tableA =  zeros(noOfTx,2);
+    tableA =  zeros(noOfTx,2);
+    %
+    for i = 1:noOfTx
+         tableA(i,:) = [TxGridCentre(:,2,rand(i,1),rand(i,2)),TxGridCentre(:,1,rand(i,1),rand(i,2))];
+    end
 
+   % disp(tableA);
+    % End point of the Algorithm 
+    [tempFitness,tempLossdB] = prop(tableA,floorMesh,pathUnit,originalFloorPlan,floorPlanGray,wallAt,noOfTx);
 
-%
-for i = 1:noOfTx
-     tableA(i,:) = [TxGridCentre(:,2,rand(i,1),rand(i,2)),TxGridCentre(:,1,rand(i,1),rand(i,2))];
-end
-disp(tableA);
-%% End point of the Algorithm 
-[fitness,lossdB] = prop(tableA,floorMesh,pathUnit,originalFloorPlan,floorPlanGray,wallAt,noOfTx,fitness);
-disp("final solution " + fitness);
+    % crude fitness score 
+    % currently this will just pick the higest amoun of Tx 
+    % need to add boundries for acceptable level this
+   % tempAvgPerTxFitnessPLUS = sum(tempLossdB./(noOfTx));
+    disp("Current fitness = " + tempFitness + "      no of TX = " + noOfTx); % + "       current TX avg = " + tempAvgPerTxFitness);
+ %   if tempAvgPerTxFitness > bestAvg
+ tempPlus = (tempFitness)./(noOfTx);
+ tempMinus = (tempFitness - 3)./noOfTx;
+ fitAvg = fitness./noOfTx;
+    if  tempPlus > fitAvg
+        fitness = tempFitness;
+        bestTX = noOfTx;
+    %    bestAvg = tempAvgPerTxFitness;
+        lossdB = tempLossdB;
+        bestCoords = tableA;
+    end
+end % t1 GA example
+disp("final solution " + fitness + "      number of TX " + bestTX);
     
 %% Applying color map    
 % smallFSPLImage = mesh map values from transmission point
@@ -231,7 +254,7 @@ for i = 1:7
 end    
 colorbar('YTickLabel',num2str(int32(colorbarLabels')));
 % text(Txc,Txr,'belh2','Color','Black','FontSize',12);
-text(tableA(:,1),tableA(:,2),'Tx','Color','Black','FontSize',12);
+text(bestCoords(:,1),bestCoords(:,2),'Tx','Color','Black','FontSize',12);
 title('Multi-Wall Path Loss Model (dB)');
 
 %%%%%%%%%%%%%%%%5  REFERENCES  %%%%%%%%%%

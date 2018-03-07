@@ -1,5 +1,5 @@
 
-function [fitness,lossdB] = prop(tableA,floorMesh,pathUnit,originalFloorPlan,floorPlanGray,wallAt,noOfTx,fitness)
+function [tempFitness,lossdB] = prop(tableA,floorMesh,pathUnit,originalFloorPlan,floorPlanGray,wallAt,noOfTx,fitness)
 %% initiation
 lightVel                = 3e8;      % Light velocity (m/s).
 freq                    = 865.2e6;  % Hz
@@ -89,8 +89,5 @@ for h = 1:noOfTx
 
 end % for h = 1:noOfTx
 
-% crude fitness score
 tempFitness = sum(lossdB)./numel(Rxr);
-if tempFitness > fitness
-    fitness = tempFitness;
-end
+
