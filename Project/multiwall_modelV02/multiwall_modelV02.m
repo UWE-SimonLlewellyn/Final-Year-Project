@@ -137,7 +137,7 @@ for i =1:GridSize
 end
 
 
-TxGridCentre =  zeros(1,2,GridSize,GridSize); % holds centre co-ord for each grid
+TxGridCentre =  zeros(1,2,GridSize,GridSize); % holds centre co-ord for each gridl
 for i =1:GridSize
     for i2 = 1:GridSize
         TxGridCentre(1,1,i2,i) =  TxGrid(1,1,i2,i) + (tempX./2);
@@ -203,7 +203,7 @@ bestTX = 1;
 lossdB = zeros(size(Rxr,1),1);
 lossdB(:) = -1000;
 bestAvg = sum(lossdB./bestTX);
-for t1 = 1:30
+for t1 = 1:20
     noOfTx = randi([1,10]);%4;% input('How many transmitters: ');
     rand= randi([1,10],noOfTx,2);
 
@@ -221,20 +221,23 @@ for t1 = 1:30
     % currently this will just pick the higest amoun of Tx 
     % need to add boundries for acceptable level this
    % tempAvgPerTxFitnessPLUS = sum(tempLossdB./(noOfTx));
-    disp("Current fitness = " + tempFitness + "      no of TX = " + noOfTx); % + "       current TX avg = " + tempAvgPerTxFitness);
+    tempPlus = (tempFitness - noOfTx)./(noOfTx);
+     fitAvg = fitness./bestTX;
+    disp("Current fitness = " + tempFitness + "      no of TX = " + noOfTx  + "         tempPlus = " + tempPlus + "         fitAvg = " + fitAvg); % + "       current TX avg = " + tempAvgPerTxFitness);
  %   if tempAvgPerTxFitness > bestAvg
- tempPlus = (tempFitness)./(noOfTx);
+
  tempMinus = (tempFitness - 3)./noOfTx;
- fitAvg = fitness./noOfTx;
+
     if  tempPlus > fitAvg
         fitness = tempFitness;
         bestTX = noOfTx;
     %    bestAvg = tempAvgPerTxFitness;
         lossdB = tempLossdB;
         bestCoords = tableA;
+        BestTempPlus = tempPlus;
     end
 end % t1 GA example
-disp("final solution " + fitness + "      number of TX " + bestTX);
+disp("final solution " + fitness + "      number of TX " + bestTX + "         BesttempPlus = " + BestTempPlus);
     
 %% Applying color map    
 % smallFSPLImage = mesh map values from transmission point
