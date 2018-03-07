@@ -221,7 +221,7 @@ for t1 = 1:20
     % currently this will just pick the higest amoun of Tx 
     % need to add boundries for acceptable level this
    % tempAvgPerTxFitnessPLUS = sum(tempLossdB./(noOfTx));
-    tempPlus = (tempFitness - noOfTx)./(noOfTx);
+    tempPlus = (tempFitness - noOfTx).*(noOfTx);
      fitAvg = fitness./bestTX;
     disp("Current fitness = " + tempFitness + "      no of TX = " + noOfTx  + "         tempPlus = " + tempPlus + "         fitAvg = " + fitAvg); % + "       current TX avg = " + tempAvgPerTxFitness);
  %   if tempAvgPerTxFitness > bestAvg
