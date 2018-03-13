@@ -246,9 +246,11 @@ for g = 1:generations
     end
 end % t1 GA example
 
+scatter(pop(:,1),pop(:,2));
+
 [pop2, pop3] = prtp(pop); %
 
-scatter(pop(:,1),pop(:,2));
+
 scatter(pop2(:,1),pop2(:,2));
 
 
