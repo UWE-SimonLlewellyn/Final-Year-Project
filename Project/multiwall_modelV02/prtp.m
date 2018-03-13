@@ -38,7 +38,7 @@ for k=1:sz1
       bb(j,:)=ak-B(i,:);
     end
   end
-  if any(bb(1:j,:)'<0)
+  if any(bb(1:j,:)'>0)
     jj=jj+1;
     c(jj,:)=ak;
     kk(jj)=k;
