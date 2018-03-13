@@ -52,8 +52,8 @@ clc
 % d0Cost231               = 1;      % Multi-wall model reference distance
 
 % for distance calculator
-meshNode.vert.num       = 30;             % Number of probs in the structure increase for better accuracy
-meshNode.horz.num       = 30;
+meshNode.vert.num       = 10;             % Number of probs in the structure increase for better accuracy
+meshNode.horz.num       = 10;
 
 
 % Wall Detection Parameters (Change them wiselt if walls are not correctly detected)
@@ -119,7 +119,7 @@ floorPlanBW = ~imdilate(~floorPlanBW,strel('disk',2));
 %% Creating Grid for placement
 
 % TxGrid hold the start and end cooridantes of the 
-GridSize = 10;
+GridSize = 5;
 TxGrid = zeros(2, 2, GridSize, GridSize);
 
 % Centre of grid squares using the starting x,y cordinates 
@@ -203,14 +203,14 @@ bestTX = 1;
 lossdB = zeros(size(Rxr,1),1);
 lossdB(:) = -1000;
 
-generations = 70;
+generations = 100;
 
 pop = zeros(generations,2);
 
 bestDualFitness = 0;
 for g = 1:generations
-    noOfTx = randi([1,10]);
-    rand= randi([1,10],noOfTx,2);
+    noOfTx = randi([1,5]);
+    rand= randi([1,GridSize],noOfTx,2);
 
     tableA =  zeros(noOfTx,2);
     %
@@ -226,13 +226,18 @@ for g = 1:generations
     % currently this will just pick the higest amoun of Tx 
     % need to add boundries for acceptable level this
     % tempAvgPerTxFitnessPLUS = sum(tempLossdB./(noOfTx));
-    tempNormalisedAvgSignal = (1./abs(tempFitness)); % normalise to number 0 - 1
+   
+     tempNormalisedAvgSignal = (1./round(abs(tempFitness))); % normalise to number 0 - 1
     tempNormalisedNoTx = (1./noOfTx); % normalise to number 0 - 1  
   %  tempWeightedSignal = abs(tempNormalisedAvgSignal./tempNormalisedNoTx);
-    tempDualFitness = abs(tempNormalisedAvgSignal ./ tempNormalisedNoTx);
-    disp("Current fitness = " + tempFitness + "      no of TX = " + noOfTx ...
-        + "      temp fitness = " + tempDualFitness + "      ( tempNormalisedAvgSignal = "...
-        + tempNormalisedAvgSignal + "  -   tempNormalisedNoTx = " + tempNormalisedNoTx + " )") 
+   % tempDualFitness = abs(tempNormalisedAvgSignal ./ tempNormalisedNoTx);
+   
+   tempDualFitness = ( (noOfTx./10) ./ tempFitness);
+   tempDualFitness = tempDualFitness.*-1;
+   
+    disp("SNR = " + tempFitness + "dbs      no of TX = " + noOfTx ...
+        + "      temp fitness ((snr/noOfTx)*-1) = " + tempDualFitness);% + "      ( tempNormalisedAvgSignal = "...
+      %  + tempNormalisedAvgSignal + "  -   tempNormalisedNoTx = " + tempNormalisedNoTx + " )") 
 
   pop(g,1) = tempNormalisedAvgSignal;
       pop(g,2) = tempNormalisedNoTx;
