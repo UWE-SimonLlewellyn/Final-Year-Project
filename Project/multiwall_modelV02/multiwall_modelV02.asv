@@ -203,12 +203,12 @@ bestTX = 1;
 lossdB = zeros(size(Rxr,1),1);
 lossdB(:) = -1000;
 
-generations = 70;
+generations = 3;
 
 pop = zeros(generations,2);
 
 bestDualFitness = 0;
-for g = 1:generations
+for t1 = 1:generations
     noOfTx = randi([1,10]);
     rand= randi([1,10],noOfTx,2);
 
@@ -229,13 +229,13 @@ for g = 1:generations
     tempNormalisedAvgSignal = (1./abs(tempFitness)); % normalise to number 0 - 1
     tempNormalisedNoTx = (1./noOfTx); % normalise to number 0 - 1  
   %  tempWeightedSignal = abs(tempNormalisedAvgSignal./tempNormalisedNoTx);
-    tempDualFitness = abs(tempNormalisedAvgSignal ./ tempNormalisedNoTx);
+    tempDualFitness = abs(tempNormalisedAvgSignal + tempNormalisedNoTx);
     disp("Current fitness = " + tempFitness + "      no of TX = " + noOfTx ...
         + "      temp fitness = " + tempDualFitness + "      ( tempNormalisedAvgSignal = "...
         + tempNormalisedAvgSignal + "  -   tempNormalisedNoTx = " + tempNormalisedNoTx + " )") 
 
-  pop(g,1) = tempNormalisedAvgSignal;
-      pop(g,2) = tempNormalisedNoTx;
+  pop(i,1) = [tempNormalisedAvgSignal;
+      pop(i,2) = tempNormalisedNoTx;
   
     if  tempDualFitness > bestDualFitness
         fitness = tempFitness;
@@ -246,11 +246,7 @@ for g = 1:generations
     end
 end % t1 GA example
 
-[pop2, pop3] = prtp(pop); %
-
-scatter(pop(:,1),pop(:,2));
-scatter(pop2(:,1),pop2(:,2));
-
+scatter(pop(1),pop(2));
 
 disp("final solution " + fitness + "      number of TX " + bestTX + "         bestDualFitness = " + bestDualFitness);
     
