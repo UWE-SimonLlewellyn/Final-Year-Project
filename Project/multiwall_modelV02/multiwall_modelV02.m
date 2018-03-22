@@ -52,8 +52,8 @@ clc
 % d0Cost231               = 1;      % Multi-wall model reference distance
 
 % for distance calculator
-meshNode.vert.num       = 15;             % Number of probs in the structure increase for better accuracy
-meshNode.horz.num       = 15;
+meshNode.vert.num       = 12;             % Number of probs in the structure increase for better accuracy
+meshNode.horz.num       = 12;
 
 
 % Wall Detection Parameters (Change them wiselt if walls are not correctly detected)
@@ -208,8 +208,9 @@ generations = 100;
 pop = zeros(generations,2);
 
 bestDualFitness = -100;
+Starttime = now;
 for g = 1:generations
-    noOfTx = randi([1,5]);
+    noOfTx = 3;%randi([1,5]);
     rand= randi([1,GridSize],noOfTx,2);
 
     tableA =  zeros(noOfTx,2);
@@ -251,6 +252,11 @@ for g = 1:generations
         bestDualFitness = tempDualFitness;
     end
 end % t1 GA example
+Endtime = now;
+
+timedif = Endtime - Starttime;
+
+disp("Total different in time " + datestr(timedif,'HH:MM:SS.FFF'));
 
 figure
 scatter(pop(:,1),pop(:,2));
