@@ -52,8 +52,8 @@ clc
 % d0Cost231               = 1;      % Multi-wall model reference distance
 
 % for distance calculator
-meshNode.vert.num       = 12;             % Number of probs in the structure increase for better accuracy
-meshNode.horz.num       = 12;
+meshNode.vert.num       = 20;             % Number of probs in the structure increase for better accuracy
+meshNode.horz.num       = 20;
 
 
 % Wall Detection Parameters (Change them wiselt if walls are not correctly detected)
@@ -261,10 +261,10 @@ disp("Total different in time " + datestr(timedif,'HH:MM:SS.FFF'));
 figure
 scatter(pop(:,1),pop(:,2));
 
-[pop2, pop3] = prtp(pop); %
+%[pop2, pop3] = prtp(pop); %
 
-figure
-scatter(pop2(:,1),pop2(:,2));
+%figure
+%scatter(pop2(:,1),pop2(:,2));
 
 
 disp("final solution " + fitness + "      number of TX " + bestTX + "         bestDualFitness = " + bestDualFitness);

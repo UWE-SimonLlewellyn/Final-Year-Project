@@ -1,0 +1,5 @@
+3tx 12x12 = 00:03:18.623 final solution -56.1644
+3tx 20x20 = 00:08:58.907 final solution -55.1033 
+
+5tx 12x12 = 00:05:25.528 final solution -52.8893
+5tx 20x20 = 00:14:52.443 final solution -51.2305 
