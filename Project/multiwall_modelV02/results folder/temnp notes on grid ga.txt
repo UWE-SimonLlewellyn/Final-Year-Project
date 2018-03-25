@@ -1,0 +1,13 @@
+GA research
+-----------------------
+https://www.ri.cmu.edu/pub_files/pub3/baluja_shumeet_1993_1/baluja_shumeet_1993_1.pdf - overlapption GA
+
+
+
+------------------------------------
+work today:
+create the non adjacent TX pos
+if Tx 5,5 
+placemnet of TX cannot be within 2 cells of original
+
+sum of XY doesn work eg. if TX on 3,2: cell space is +/- 2, TX = 5, valid: <=3 & >=7  , cell 1,3 is valid but calculation says it isn't 

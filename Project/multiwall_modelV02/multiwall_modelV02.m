@@ -220,12 +220,14 @@ for g = 1:generations
        count = i;
        tempXY = randi([1,GridSize],1,2);
        for i10 = 1:count 
-           tempA = tableA(i10,:);          
+           tempA = tableA(i10,:);  
+           sumTempXY = tempXY(1,1) + tempXY(1,2);
            tempSumTable = tempA(1,1) + tempA(1,2);
-           if tempXY(1,1) == tempA(1,1) 
-               if 
-                validTXcell = true;
-             
+           if tempXY(1,1) > (tempA(1,1) + cellSpace) || tempXY(1,1) < (tempA(1,1) - cellSpace) ...
+                       || tempXY(1,2) > (tempA(1,2) + cellSpace) || tempXY(1,2) < (tempA(1,2) - cellSpace) ...
+                       || sumTempXY > (cellSpace + tempSumTable) || sumTempXY < (tempSumTable - cellSpace)...
+                       || tempSumTable == 0                 
+                validTXcell = true;             
            else
                validTXcell = false;
                if i > 0
