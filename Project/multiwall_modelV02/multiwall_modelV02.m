@@ -52,8 +52,9 @@ clc
 % d0Cost231               = 1;      % Multi-wall model reference distance
 
 % for distance calculator
-meshNode.vert.num       = 10;             % Number of probs in the structure increase for better accuracy
-meshNode.horz.num       = 10;
+GridSize = 10;
+meshNode.vert.num       = GridSize;             % Number of probs in the structure increase for better accuracy
+meshNode.horz.num       = GridSize;
 
 
 % Wall Detection Parameters (Change them wiselt if walls are not correctly detected)
@@ -119,7 +120,6 @@ floorPlanBW = ~imdilate(~floorPlanBW,strel('disk',2));
 %% Creating Grid for placement
 
 % TxGrid hold the start and end cooridantes of the 
-GridSize = 5;
 TxGrid = zeros(2, 2, GridSize, GridSize);
 
 % Centre of grid squares using the starting x,y cordinates 
@@ -210,34 +210,34 @@ pop = zeros(generations,2);
 bestDualFitness = -100;
 Starttime = now;
 tempXY = [-100,-100];
-cellSpace = 2;
+cellSpace = 3;
+tableA =  zeros(noOfTx,2);
 for g = 1:generations
-    noOfTx = 3;%randi([1,5]);
-    tableA =  zeros(noOfTx,2);
+    noOfTx = randi([1,5]);
+    tempTableA =  zeros(noOfTx,2);
     
-    
-    for i = 1:noOfTx
+    i = 1;   
+    while i <= noOfTx
        count = i;
        tempXY = randi([1,GridSize],1,2);
        for i10 = 1:count 
-           tempA = tableA(i10,:);  
+           tempA = tempTableA(i10,:);  
            sumTempXY = tempXY(1,1) + tempXY(1,2);
            tempSumTable = tempA(1,1) + tempA(1,2);
            if tempXY(1,1) > (tempA(1,1) + cellSpace) || tempXY(1,1) < (tempA(1,1) - cellSpace) ...
                        || tempXY(1,2) > (tempA(1,2) + cellSpace) || tempXY(1,2) < (tempA(1,2) - cellSpace) ...
                        || sumTempXY > (cellSpace + tempSumTable) || sumTempXY < (tempSumTable - cellSpace)...
                        || tempSumTable == 0                 
-                validTXcell = true;             
+                validTXcell = true;  
+                   
            else
                validTXcell = false;
-               if i > 0
-                    i = i -1;
-               end
                break
            end 
        end
        if validTXcell == true
-             tableA(i,:) = tempXY;
+             tempTableA(i,:) = tempXY;
+             i = i+1;
        end
     end
     
@@ -246,9 +246,9 @@ for g = 1:generations
 
     
     %
-%     for i = 1:noOfTx
-%          tableA(i,:) = [TxGridCentre(:,2,rand(i,1),rand(i,2)),TxGridCentre(:,1,rand(i,1),rand(i,2))];
-%     end
+    for i = 1:noOfTx
+         tableA(i,:) = [TxGridCentre(:,2,tempTableA(i,1),tempTableA(i,2)),TxGridCentre(:,1,tempTableA(i,1),tempTableA(i,2))];
+    end
 
    % disp(tableA);
     % End point of the Algorithm 
