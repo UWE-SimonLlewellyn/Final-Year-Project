@@ -259,6 +259,8 @@ for g = 1:generations
     % need to add boundries for acceptable level this
     % tempAvgPerTxFitnessPLUS = sum(tempLossdB./(noOfTx));
    
+    tempFitness = round(tempFitness);
+    
      tempNormalisedAvgSignal = (1./round(abs(tempFitness))); % normalise to number 0 - 1
     tempNormalisedNoTx = (1./noOfTx); % normalise to number 0 - 1  
   %  tempWeightedSignal = abs(tempNormalisedAvgSignal./tempNormalisedNoTx);
@@ -320,7 +322,7 @@ end
 colorbar('YTickLabel',num2str(int32(colorbarLabels')));
 % text(Txc,Txr,'belh2','Color','Black','FontSize',12);
 text(bestCoords(:,1),bestCoords(:,2),'Tx','Color','Black','FontSize',12);
-title('Multi-Wall Path Loss Model (dB)');
+title("final solution: " + fitness + "(dbs), number of TX " + bestTX + ", bestDualFitness = " + bestDualFitness);
 
 %%%%%%%%%%%%%%%%5  REFERENCES  %%%%%%%%%%
 % http://uk.mathworks.com/matlabcentral/fileexchange/28190-bresenham-optimized-for-matlab/content/bresenham.m
