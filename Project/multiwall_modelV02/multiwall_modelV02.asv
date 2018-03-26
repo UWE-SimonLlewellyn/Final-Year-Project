@@ -81,7 +81,7 @@ noOfTx = 0;     % defalt is set to 0 will be changed at prompt later
 fitness = -100; 
 
 % calculate scale of diagram
-pathLength = 3; % meters
+pathLength = 15; % meters
 pathPixels = 110; % pixles or  
 pathUnit = pathLength./pathPixels; %pathUnit = meter per pixel
 
@@ -210,10 +210,10 @@ pop = zeros(generations,2);
 bestDualFitness = -100;
 Starttime = now;
 tempXY = [-100,-100];
-cellSpace = 3;
+cellSpace = 5;
 tableA =  zeros(noOfTx,2);
 for g = 1:generations
-    noOfTx = randi([1,4]);
+    noOfTx = randi([1,5]);
     tempTableA =  zeros(noOfTx,2);
     
     i = 1;   
@@ -269,7 +269,6 @@ for g = 1:generations
    tempDualFitness = (tempFitness ./ noOfTx) ;%.* -1;
    
     disp("SNR = " + tempFitness + "dbs      no of TX = " + noOfTx ...
-        + "      cell space = " + cellSpace ...
         + "      temp fitness ((snr/noOfTx)*-1) = " + tempDualFitness);% + "      ( tempNormalisedAvgSignal = "...
       %  + tempNormalisedAvgSignal + "  -   tempNormalisedNoTx = " + tempNormalisedNoTx + " )") 
 
