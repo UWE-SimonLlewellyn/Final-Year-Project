@@ -73,9 +73,10 @@ wallAt(253) = 6;
 wallAt(252) = 6;
 wallAt(255) = round(sum(wallAt)./sum(wallAt>0));  % This is for intersecting walls, just leave it as it is
 
+
 % Added vars for UWE work
 %-------------------------------------------
-noOfTx = 0;     % defalt is set to 0 will be changed at prompt later
+noOfTx = 1;     % defalt is set to 0 will be changed at prompt later
 
 % needed for AI algorithm
 fitness = -100; 
@@ -110,11 +111,34 @@ end
 
 originalFloorPlan = floorPlanBW; % At this point, Structure in Original Image and floorPlanBW is in black
 
+% % LOS & Walls Determination
+% Thining the floor plan. Only one pixel per wall should intersect with LOS  
+thinFloorPlanBW = ~ originalFloorPlan;
+thinFloorPlanBW = bwmorph(thinFloorPlanBW,'thin','inf');
+thinFloorPlanBW = bwmorph(thinFloorPlanBW,'diag');
+
+
 % Optional delation of the image to make wall selection easier
 floorPlanBW = ~imdilate(~floorPlanBW,strel('disk',2));
 % figure
 % imshow(floorPlanBW,'InitialMagnification',100);
 % title('Floor Plan');
+
+%% Meshing the Floor Plan
+% Mesh is where plot points are added to the image to to help loss
+% calculations
+floorMesh = zeros(size(floorPlanBW));
+
+mesh.vert.spacing = pathUnit .* size(floorPlanBW,1) ./ meshNode.vert.num; % node spacing meters
+mesh.horz.spacing = pathUnit .* size(floorPlanBW,2) ./ meshNode.horz.num; % node spacing meters
+floorMesh(floor(linspace(1,size(floorPlanBW,1),meshNode.vert.num)),...
+    floor(linspace(1,size(floorPlanBW,2),meshNode.horz.num))) = 1;
+
+
+[floorPlanGray,countedWalls] = autoWallDetection(~originalFloorPlan,wallAt,demoMode,thetaRes,minWallLength,fillGap); % Detecting all the walls Generates floorPlanGray where different wall are index coded in the gray image
+
+
+
 
 
 %% Creating Grid for placement
@@ -145,7 +169,15 @@ for i =1:GridSize
     end
 end
 
+%% Combining all plan details into an object
 
+currentPlanDetails = PropPlan;
+currentPlanDetails.floorMesh = floorMesh;
+currentPlanDetails.pathUnit = pathUnit;
+currentPlanDetails.thinFloorPlanBW = thinFloorPlanBW;
+currentPlanDetails.floorPlanGray = floorPlanGray;
+currentPlanDetails.wallAt = wallAt;
+currentPlanDetails.TxGridCentre = TxGridCentre;
  %% Plan Calibration
  % commented out to remove the need to adjust size of map to allow for fair
  % comparisions
@@ -183,108 +215,88 @@ end
 % 
 % pathUnit = pathLength./pathPixels; %pathUnit = meter per pixel
 
-%% Meshing the Floor Plan
-% Mesh is where plot points are added to the image to to help loss
-% calculations
-floorMesh = zeros(size(floorPlanBW));
 
-mesh.vert.spacing = pathUnit .* size(floorPlanBW,1) ./ meshNode.vert.num; % node spacing meters
-mesh.horz.spacing = pathUnit .* size(floorPlanBW,2) ./ meshNode.horz.num; % node spacing meters
-floorMesh(floor(linspace(1,size(floorPlanBW,1),meshNode.vert.num)),...
-    floor(linspace(1,size(floorPlanBW,2),meshNode.horz.num))) = 1;
+%% Start of the GA
+%
+MaxNumTx = 4;
+popSize = 5;
+grid = [GridSize,GridSize];
+cellSpace = 3;
+
+[parent,geneLen] = createPop(MaxNumTx,popSize,grid,cellSpace,currentPlanDetails);
+
+A= 1;
 
 
-[floorPlanGray,countedWalls] = autoWallDetection(~originalFloorPlan,wallAt,demoMode,thetaRes,minWallLength,fillGap); % Detecting all the walls Generates floorPlanGray where different wall are index coded in the gray image
 
-%% Locating The Transmitter.
+
+
+%% Placement Of The Transmitter.
 % 
+
 bestTX = 1;
 [Rxr,Rxc] = find(floorMesh == 1); 
 lossdB = zeros(size(Rxr,1),1);
 lossdB(:) = -1000;
 
-generations = 100;
+generations = 5;
 
 pop = zeros(generations,2);
 
 bestDualFitness = -100;
 Starttime = now;
 tempXY = [-100,-100];
-cellSpace = 3;
-tableA =  zeros(noOfTx,2);
+
+tableOfTxPixelCoords =  zeros(MaxNumTx,2);
 for g = 1:generations
-    noOfTx = randi([1,4]);
-    tempTableA =  zeros(noOfTx,2);
-    
-    i = 1;   
-    while i <= noOfTx
-       count = i;
-       tempXY = randi([1,GridSize],1,2);
-       for i10 = 1:count 
-           tempA = tempTableA(i10,:);  
-           sumTempXY = tempXY(1,1) + tempXY(1,2);
-           tempSumTable = tempA(1,1) + tempA(1,2);
-           if tempXY(1,1) > (tempA(1,1) + cellSpace) || tempXY(1,1) < (tempA(1,1) - cellSpace) ...
-                       || tempXY(1,2) > (tempA(1,2) + cellSpace) || tempXY(1,2) < (tempA(1,2) - cellSpace) ...
-                       || sumTempXY > (cellSpace + tempSumTable) || sumTempXY < (tempSumTable - cellSpace)...
-                       || tempSumTable == 0                 
-                validTXcell = true;  
-                   
-           else
-               validTXcell = false;
-               break
-           end 
-       end
-       if validTXcell == true
-             tempTableA(i,:) = tempXY;
-             i = i+1;
-       end
-    end
-    
-    
-   % rand= randi([1,GridSize],noOfTx,2);
 
+   tableOfTxGridCoords = TxGridSpacing(MaxNumTx,GridSize,cellSpace);
     
-    %
-    for i = 1:noOfTx
-         tableA(i,:) = [TxGridCentre(:,2,tempTableA(i,1),tempTableA(i,2)),TxGridCentre(:,1,tempTableA(i,1),tempTableA(i,2))];
-    end
-
-   % disp(tableA);
-    % End point of the Algorithm 
-    [tempFitness,tempLossdB] = prop(tableA,floorMesh,pathUnit,originalFloorPlan,floorPlanGray,wallAt,noOfTx);
-
-    % crude fitness score 
-    % currently this will just pick the higest amoun of Tx 
-    % need to add boundries for acceptable level this
-    % tempAvgPerTxFitnessPLUS = sum(tempLossdB./(noOfTx));
-   
-    tempFitness = round(tempFitness);
-    
-     tempNormalisedAvgSignal = (1./round(abs(tempFitness))); % normalise to number 0 - 1
-    tempNormalisedNoTx = (1./noOfTx); % normalise to number 0 - 1  
-  %  tempWeightedSignal = abs(tempNormalisedAvgSignal./tempNormalisedNoTx);
-   % tempDualFitness = abs(tempNormalisedAvgSignal ./ tempNormalisedNoTx);
-   
-%   tempInverseFitness =  (1000 + tempFitness);
-%   tempDualFitness =  tempNormalisedAvgSignal ./ noOfTx;
-   tempDualFitness = (tempFitness ./ noOfTx) ;%.* -1;
-   
-    disp("SNR = " + tempFitness + "dbs      no of TX = " + noOfTx ...
-        + "      cell space = " + cellSpace ...
-        + "      temp fitness ((snr/noOfTx)*-1) = " + tempDualFitness);% + "      ( tempNormalisedAvgSignal = "...
-      %  + tempNormalisedAvgSignal + "  -   tempNormalisedNoTx = " + tempNormalisedNoTx + " )") 
-
-  pop(g,1) = tempNormalisedAvgSignal;
-      pop(g,2) = tempNormalisedNoTx;
-  
-    if  tempDualFitness > bestDualFitness
-        fitness = tempFitness;
-        bestTX = noOfTx;
-        lossdB = tempLossdB;
-        bestCoords = tableA;
-        bestDualFitness = tempDualFitness;
-    end
+% %     %
+% %     for i = 1:MaxNumTx
+% %         if  tableOfTxGridCoords(i,1) ~= 0
+% %             tableOfTxPixelCoords(i,:) = [TxGridCentre(:,2,tableOfTxGridCoords(i,1),...
+% %                 tableOfTxGridCoords(i,2)),TxGridCentre(:,1,tableOfTxGridCoords(i,1),...
+% %                 tableOfTxGridCoords(i,2))];
+% %         else
+% %             break;
+% %         end
+% %     end
+% % 
+% %     % End point of the Algorithm 
+% %     [tempFitness,tempLossdB] = prop(tableOfTxPixelCoords,currentPlanDetails,MaxNumTx);
+% % 
+% %     % crude fitness score 
+% %     % currently this will just pick the higest amoun of Tx 
+% %     % need to add boundries for acceptable level this
+% %     % tempAvgPerTxFitnessPLUS = sum(tempLossdB./(noOfTx));
+% %    
+% %     tempFitness = round(tempFitness);
+% %     
+% %      tempNormalisedAvgSignal = (1./round(abs(tempFitness))); % normalise to number 0 - 1
+% %     tempNormalisedNoTx = (1./noOfTx); % normalise to number 0 - 1  
+% %   %  tempWeightedSignal = abs(tempNormalisedAvgSignal./tempNormalisedNoTx);
+% %    % tempDualFitness = abs(tempNormalisedAvgSignal ./ tempNormalisedNoTx);
+% %    
+% % %   tempInverseFitness =  (1000 + tempFitness);
+% % %   tempDualFitness =  tempNormalisedAvgSignal ./ noOfTx;
+% %    tempDualFitness = (tempFitness ./ noOfTx) ;%.* -1;
+% %    
+% %     disp("SNR = " + tempFitness + "dbs      no of TX = " + noOfTx ...
+% %         + "      cell space = " + cellSpace ...
+% %         + "      temp fitness ((snr/noOfTx)*-1) = " + tempDualFitness);% + "      ( tempNormalisedAvgSignal = "...
+% %       %  + tempNormalisedAvgSignal + "  -   tempNormalisedNoTx = " + tempNormalisedNoTx + " )") 
+% % 
+% %   pop(g,1) = tempNormalisedAvgSignal;
+% %       pop(g,2) = tempNormalisedNoTx;
+% %   
+% %     if  tempDualFitness > bestDualFitness
+% %         fitness = tempFitness;
+% %         bestTX = noOfTx;
+% %         lossdB = tempLossdB;
+% %         bestCoords = tableOfTxPixelCoords;
+% %         bestDualFitness = tempDualFitness;
+% %     end
 end % t1 GA example
 Endtime = now;
 
