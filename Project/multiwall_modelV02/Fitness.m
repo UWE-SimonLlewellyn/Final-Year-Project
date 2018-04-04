@@ -21,7 +21,7 @@ tableOfTxPixelCoords =  zeros(MaxNumTx,2);
     
     dualFitness = meandB ./ noOfTx
     meandB = round(meandB);
-    tempSoltuion = Solution;
+    tempSoltuion = Solution(noOfTx,meandB,tableOfTxPixelCoords,dualFitness);
     
     tempSoltuion.add(noOfTx,meandB,tableOfTxPixelCoords,dualFitness);
     

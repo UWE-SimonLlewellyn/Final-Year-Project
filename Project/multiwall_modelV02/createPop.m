@@ -35,17 +35,19 @@ function [population, geneLen] = createPop(MaxNumTx,popSize,grid, cellSpace,curr
     k = 1;
     for  i = 1:popSize
         tempSolution = TxGridSpacing(MaxNumTx, grid(1,1), cellSpace);
-        [currentSolution] = Fitness(tempSolution,currentPlanDetails,MaxNumTx);
+        currentSolutionObj = Fitness(tempSolution,currentPlanDetails,MaxNumTx);
         for j =  1:MaxNumTx
-            population(1:k) = tempSolution(1:j);
+            test = tempSolution(j,1);
+            population(1,k) = test;
             k=k+1;
-            population(1:k) = tempSolution(2:j); % fails when tryin gto get the value out 
+            test = tempSolution(j,2); 
+            population(1,k) = test; % fails when tryin gto get the value out 
             %In an assignment  A(:) = B, the number of elements in A and B must be the same.
             k=k+1;
         end
-        population(1:k) = tempSolutionFitness;
+        population(1,k) = currentSolutionObj.bestDualFitness;
         k = k+1;              
-        bestSolution.compare(currentSolution);
+        bestSolution.compare(currentSolutionObj);
 
     end
 
