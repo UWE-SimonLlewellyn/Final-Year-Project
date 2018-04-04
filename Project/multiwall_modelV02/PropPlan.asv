@@ -13,17 +13,16 @@ classdef PropPlan
     
     
    methods
-        function obj = add(obj,floorMesh, pathUnit,thinFloorPlanBW,floorPlanGray, wallAt, TxGridCentre)
+        function obj = compare(obj,inputSolution)
             %SOLUTION Construct an instance of this class
             %   Detailed explanation goes here
             
-            obj.floorMesh = floorMesh;
-            obj.pathUnit = pathUnit;
-            obj.thinFloorPlanBW = thinFloorPlanBW;
-            obj.floorPlanGray = floorPlanGray;
-            obj.wallAt = wallAt;
-            obj.TxGridCentre = TxGridCentre;
-        end
-   end
+    currentPlanDetails.floorMesh = floorMesh;
+currentPlanDetails.pathUnit = pathUnit;
+currentPlanDetails.thinFloorPlanBW = thinFloorPlanBW;
+currentPlanDetails.floorPlanGray = floorPlanGray;
+currentPlanDetails.wallAt = wallAt;
+currentPlanDetails.TxGridCentre = TxGridCentre;
+        end 
 end
 

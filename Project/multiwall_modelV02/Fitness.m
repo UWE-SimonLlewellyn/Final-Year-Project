@@ -1,4 +1,4 @@
-function [tempSoltuion] = Fitness(tableOfTxGridCoords,currentPlanDetails,MaxNumTx)
+function [tempSolution] = Fitness(tableOfTxGridCoords,currentPlanDetails,MaxNumTx)
 %FITNESS Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -21,10 +21,10 @@ tableOfTxPixelCoords =  zeros(MaxNumTx,2);
     
     dualFitness = meandB ./ noOfTx
     meandB = round(meandB);
-    tempSoltuion = Solution(noOfTx,meandB,tableOfTxPixelCoords,dualFitness);
-    
-    tempSoltuion.add(noOfTx,meandB,tableOfTxPixelCoords,dualFitness);
-    
+    tempSolution = Solution;
 
+    tempSolution = tempSolution.add(noOfTx, meandB, nodedBresults,tableOfTxPixelCoords, dualFitness);
+
+    
 end
 

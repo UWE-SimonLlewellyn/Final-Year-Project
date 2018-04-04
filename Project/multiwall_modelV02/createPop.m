@@ -1,4 +1,4 @@
-function [population, geneLen] = createPop(MaxNumTx,popSize,grid, cellSpace,currentPlanDetails)
+function [population, geneLen, bestSolution] = createPop(MaxNumTx,popSize,grid, cellSpace,currentPlanDetails)
 %FITNESS Summary of this function goes here)
 %CREATEPOP inital random population to intitiate the GA
 %   population will consist of multiple random solutions based upon the
@@ -37,17 +37,14 @@ function [population, geneLen] = createPop(MaxNumTx,popSize,grid, cellSpace,curr
         tempSolution = TxGridSpacing(MaxNumTx, grid(1,1), cellSpace);
         currentSolutionObj = Fitness(tempSolution,currentPlanDetails,MaxNumTx);
         for j =  1:MaxNumTx
-            test = tempSolution(j,1);
-            population(1,k) = test;
+            population(1,k) = tempSolution(j,1);
             k=k+1;
-            test = tempSolution(j,2); 
-            population(1,k) = test; % fails when tryin gto get the value out 
-            %In an assignment  A(:) = B, the number of elements in A and B must be the same.
+            population(1,k) = tempSolution(j,2); 
             k=k+1;
         end
         population(1,k) = currentSolutionObj.bestDualFitness;
         k = k+1;              
-        bestSolution.compare(currentSolutionObj);
+        bestSolution = bestSolution.compare(currentSolutionObj);
 
     end
 

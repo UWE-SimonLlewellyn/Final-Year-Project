@@ -172,152 +172,41 @@ end
 %% Combining all plan details into an object
 
 currentPlanDetails = PropPlan;
-currentPlanDetails.floorMesh = floorMesh;
-currentPlanDetails.pathUnit = pathUnit;
-currentPlanDetails.thinFloorPlanBW = thinFloorPlanBW;
-currentPlanDetails.floorPlanGray = floorPlanGray;
-currentPlanDetails.wallAt = wallAt;
-currentPlanDetails.TxGridCentre = TxGridCentre;
- %% Plan Calibration
- % commented out to remove the need to adjust size of map to allow for fair
- % comparisions
-% % Getting 2 points from image for calibration
-% disp('Select two points from walls to calibrate the plan!'); 
-% while 1
-%     disp('Select the 1st point')
-%     try
-%         [r,c] = ginput(1); % get points one by one. Check each to be a- hit not miss
-%         R(1,1)= round(r);
-%         C(1,1) = round(c);
-%     catch
-%     end
-%     if ~floorPlanBW(C(1,1),R(1,1))
-%         break % if its a hit it stops
-%     end
-% end
-% 
-% while 1
-%     disp('Select the 2nd point')
-%     [r,c] = ginput(1); % get points one by one. Check each to be a- hit not miss
-%     R(2,1) = round(r);
-%     C(2,1) = round(c);
-%     if ~floorPlanBW(C(2,1),R(2,1)) % detects if point hit wall
-%         break % if its a hit it stops
-%     end
-% end
-% % Finding shortest path betweent the two points
-% calibPath = shortestPath(imcomplement(floorPlanBW),R,C);
-% P = imoverlay(floorPlanBW,calibPath,[0,1,0]);
-% 
-% % Calibrating pixel per meter
-% pathPixels = sum(sum(calibPath));
-% pathLength = input('Length of calibration path in meters: ');
-% 
-% pathUnit = pathLength./pathPixels; %pathUnit = meter per pixel
+currentPlanDetails = currentPlanDetails.add(floorMesh, pathUnit,thinFloorPlanBW,floorPlanGray, wallAt, TxGridCentre);
 
 
 %% Start of the GA
 %
+Starttime = now;
 MaxNumTx = 4;
-popSize = 5;
+popSize = 15;
+generations = 100;
 grid = [GridSize,GridSize];
 cellSpace = 3;
 
-[parent,geneLen] = createPop(MaxNumTx,popSize,grid,cellSpace,currentPlanDetails);
+bestSolution = Solution;
 
-A= 1;
-
-
-
+%create initial population and score
+[parent,geneLen,bestSolution ] = createPop(MaxNumTx,popSize,grid,cellSpace,currentPlanDetails);
 
 
-%% Placement Of The Transmitter.
-% 
 
-bestTX = 1;
-[Rxr,Rxc] = find(floorMesh == 1); 
-lossdB = zeros(size(Rxr,1),1);
-lossdB(:) = -1000;
 
-generations = 5;
 
-pop = zeros(generations,2);
 
-bestDualFitness = -100;
-Starttime = now;
-tempXY = [-100,-100];
 
-tableOfTxPixelCoords =  zeros(MaxNumTx,2);
-for g = 1:generations
 
-   tableOfTxGridCoords = TxGridSpacing(MaxNumTx,GridSize,cellSpace);
-    
-% %     %
-% %     for i = 1:MaxNumTx
-% %         if  tableOfTxGridCoords(i,1) ~= 0
-% %             tableOfTxPixelCoords(i,:) = [TxGridCentre(:,2,tableOfTxGridCoords(i,1),...
-% %                 tableOfTxGridCoords(i,2)),TxGridCentre(:,1,tableOfTxGridCoords(i,1),...
-% %                 tableOfTxGridCoords(i,2))];
-% %         else
-% %             break;
-% %         end
-% %     end
-% % 
-% %     % End point of the Algorithm 
-% %     [tempFitness,tempLossdB] = prop(tableOfTxPixelCoords,currentPlanDetails,MaxNumTx);
-% % 
-% %     % crude fitness score 
-% %     % currently this will just pick the higest amoun of Tx 
-% %     % need to add boundries for acceptable level this
-% %     % tempAvgPerTxFitnessPLUS = sum(tempLossdB./(noOfTx));
-% %    
-% %     tempFitness = round(tempFitness);
-% %     
-% %      tempNormalisedAvgSignal = (1./round(abs(tempFitness))); % normalise to number 0 - 1
-% %     tempNormalisedNoTx = (1./noOfTx); % normalise to number 0 - 1  
-% %   %  tempWeightedSignal = abs(tempNormalisedAvgSignal./tempNormalisedNoTx);
-% %    % tempDualFitness = abs(tempNormalisedAvgSignal ./ tempNormalisedNoTx);
-% %    
-% % %   tempInverseFitness =  (1000 + tempFitness);
-% % %   tempDualFitness =  tempNormalisedAvgSignal ./ noOfTx;
-% %    tempDualFitness = (tempFitness ./ noOfTx) ;%.* -1;
-% %    
-% %     disp("SNR = " + tempFitness + "dbs      no of TX = " + noOfTx ...
-% %         + "      cell space = " + cellSpace ...
-% %         + "      temp fitness ((snr/noOfTx)*-1) = " + tempDualFitness);% + "      ( tempNormalisedAvgSignal = "...
-% %       %  + tempNormalisedAvgSignal + "  -   tempNormalisedNoTx = " + tempNormalisedNoTx + " )") 
-% % 
-% %   pop(g,1) = tempNormalisedAvgSignal;
-% %       pop(g,2) = tempNormalisedNoTx;
-% %   
-% %     if  tempDualFitness > bestDualFitness
-% %         fitness = tempFitness;
-% %         bestTX = noOfTx;
-% %         lossdB = tempLossdB;
-% %         bestCoords = tableOfTxPixelCoords;
-% %         bestDualFitness = tempDualFitness;
-% %     end
-end % t1 GA example
 Endtime = now;
 
 timedif = Endtime - Starttime;
 
 disp("Total different in time " + datestr(timedif,'HH:MM:SS.FFF'));
 
-figure
-scatter(pop(:,1),pop(:,2));
-
-%[pop2, pop3] = prtp(pop); %
-
-%figure
-%scatter(pop2(:,1),pop2(:,2));
-
-
-disp("final solution " + fitness + "      number of TX " + bestTX + "         bestDualFitness = " + bestDualFitness);
+%disp("final solution " + fitness + "      number of TX " + bestTX + "         bestDualFitness = " + bestDualFitness);
     
 %% Applying color map    
 % smallFSPLImage = mesh map values from transmission point
-smallFSPLImage = (reshape(lossdB,meshNode.vert.num, meshNode.horz.num));
+smallFSPLImage = (reshape(bestSolution.nodedBresults,meshNode.vert.num, meshNode.horz.num));
 % FSPLFullImage -db level for value of singal on the map. 
 FSPLFullImage = (imresize(smallFSPLImage,[size(floorPlan,1),size(floorPlan,2)],'method','cubic'));
 % Converts to a num 0.0-1.0 high is the strongest signal
@@ -329,12 +218,12 @@ colormap(gca,'jet');
 
 
 for i = 1:7
-    colorbarLabels(i) = min(lossdB) + i .* ((max(lossdB)-min(lossdB))./7);
+    colorbarLabels(i) = min(bestSolution.nodedBresults) + i .* ((max(bestSolution.nodedBresults)-min(bestSolution.nodedBresults))./7);
 end    
 colorbar('YTickLabel',num2str(int32(colorbarLabels')));
 % text(Txc,Txr,'belh2','Color','Black','FontSize',12);
-text(bestCoords(:,1),bestCoords(:,2),'Tx','Color','Black','FontSize',12);
-title("final solution: " + fitness + "(dbs), number of TX " + bestTX + ", bestDualFitness = " + bestDualFitness);
+text(bestSolution.tableOfCoOrdinates(:,1),bestSolution.tableOfCoOrdinates(:,2),'Tx','Color','Black','FontSize',12);
+title("final solution: " + bestSolution.meandB  + "(dbs), number of TX " + bestSolution.noTx + ", bestDualFitness = " + bestSolution.bestDualFitness );
 
 %%%%%%%%%%%%%%%%5  REFERENCES  %%%%%%%%%%
 % http://uk.mathworks.com/matlabcentral/fileexchange/28190-bresenham-optimized-for-matlab/content/bresenham.m

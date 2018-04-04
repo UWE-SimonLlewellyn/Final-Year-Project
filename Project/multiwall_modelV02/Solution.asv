@@ -5,9 +5,8 @@ classdef Solution
     properties
         noTx
         meandB
-        nodedBresults
         tableOfCoOrdinates
-        bestDualFitness = -1000
+        bestDualFitness
     end
     
     methods
@@ -18,7 +17,6 @@ classdef Solution
             if inputSolution.bestDualFitness > obj.bestDualFitness
                 obj.noTx = inputSolution.noTx;
                 obj.meandB = inputSolution.meandB;
-                obj.nodedBresults = inputSolution.nodedBresults;
                 obj.tableOfCoOrdinates = inputSolution.tableOfCoOrdinates;
                 obj.bestDualFitness = inputSolution.bestDualFitness;
             
@@ -26,15 +24,11 @@ classdef Solution
                       
         end
         
-        function obj =  add(obj,inputNoOfTx,inputMeandB,inputNodedBresults,inputTableOfTxPixelCoords,inputDualFitness)
+        function obj =  add(obj,inputNoOfTx,inputMeandB,inputTableOfTxPixelCoords,inputDualFitness)
             %SOLUTION Construct an instance of this class
             %   Detailed explanation goes here
             
-                obj.noTx = inputNoOfTx;
-                obj.meandB = inputMeandB;
-                obj.nodedBresults = inputNodedBresults;
-                obj.tableOfCoOrdinates = inputTableOfTxPixelCoords;
-                obj.bestDualFitness = inputDualFitness;
+
                        
         end
        
