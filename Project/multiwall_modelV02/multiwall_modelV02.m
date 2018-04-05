@@ -52,7 +52,7 @@ clc
 % d0Cost231               = 1;      % Multi-wall model reference distance
 
 % for distance calculator
-GridSize = 20;
+GridSize = 10;
 meshNode.vert.num       = GridSize;             % Number of probs in the structure increase for better accuracy
 meshNode.horz.num       = GridSize;
 
@@ -82,7 +82,7 @@ noOfTx = 1;     % defalt is set to 0 will be changed at prompt later
 fitness = -100; 
 
 % calculate scale of diagram
-pathLength = 1.5; % meters
+pathLength = 10; % meters
 pathPixels = 110; % pixles or  
 pathUnit = pathLength./pathPixels; %pathUnit = meter per pixel
 
@@ -182,7 +182,7 @@ MaxNumTx = 10;
 popSize = 25;
 generations = 50;
 grid = [GridSize,GridSize];
-cellSpace = 3;
+cellSpace = 2;
 
 bestSolution = Solution;
 for g = 1:generations

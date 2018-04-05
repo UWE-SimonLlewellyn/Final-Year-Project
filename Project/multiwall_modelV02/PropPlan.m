@@ -9,6 +9,8 @@ classdef PropPlan
         floorPlanGray 
         wallAt
         TxGridCentre
+        Rxr
+        Rxc
     end
     
     
@@ -23,6 +25,7 @@ classdef PropPlan
             obj.floorPlanGray = floorPlanGray;
             obj.wallAt = wallAt;
             obj.TxGridCentre = TxGridCentre;
+            [obj.Rxr,obj.Rxc] = find(floorMesh == 1); % finding the nodes 
         end
    end
 end

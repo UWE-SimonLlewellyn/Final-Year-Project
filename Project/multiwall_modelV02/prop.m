@@ -22,14 +22,17 @@ for i = 1:noOfTx
     Txr = tableOfTxCoords(i,2);
     
     if (Txc ~= 0) % if Txc == 0 means no fuurther Tx in solution
-        [Rxr,Rxc] = find(currentPlanDetails.floorMesh == 1); % finding the nodes 
-        dRxTxr = Rxr - Txr; % distance in terms of pixels
-        dRxTxc = Rxc - Txc; % distance in terms of pixels 
+        dRxTxr = currentPlanDetails.Rxr - Txr; % distance in terms of pixels
+        dRxTxc = currentPlanDetails.Rxc - Txc; % distance in terms of pixels 
         tempNodeDistance = sqrt(dRxTxr.^2 + dRxTxc.^2) * currentPlanDetails.pathUnit; % distance in terms of meters
 
+        % used to compare the current Tx to node distances againt the previous
+        % placed Txs
         if i==1
             nodeDistance = tempNodeDistance;
         else
+            % if temp(current) node is closer to Tx the value replaces the
+            % store value
             for j = 1:numel(tempNodeDistance)
                 if tempNodeDistance(j,1) <  nodeDistance(j,1)
                     nodeDistance(j,1) = tempNodeDistance(j,1); % var that is passed though to the rest 
@@ -45,27 +48,21 @@ end
 %% Indoor Propagation Models
 % %  COST 231 Model %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% % % LOS & Walls Determination
-% % Thining the floor plan. Only one pixel per wall should intersect with LOS  
-% thinFloorPlanBW = ~ originalFloorPlan;
-% thinFloorPlanBW = bwmorph(thinFloorPlanBW,'thin','inf');
-% thinFloorPlanBW = bwmorph(thinFloorPlanBW,'diag');
-
 
 losTemp = zeros(size(currentPlanDetails.thinFloorPlanBW));
-wallsType = cell(size(Rxr,1),1); % pre-defining
-numWalls = zeros(size(Rxr,1),1);    
-lossdB = zeros(size(Rxr,1),1);
+wallsType = cell(size(currentPlanDetails.Rxr,1),1); % pre-defining
+numWalls = zeros(size(currentPlanDetails.Rxr,1),1);    
+lossdB = zeros(size(currentPlanDetails.Rxr,1),1);
 
 for h = 1:noOfTx
-    losC = cell(size(Rxr,1),1);
-    losR = cell(size(Rxr,1),1);
+    losC = cell(size(currentPlanDetails.Rxr,1),1);
+    losR = cell(size(currentPlanDetails.Rxr,1),1);
     Txc = tableOfTxCoords(h,1);  
     Txr = tableOfTxCoords(h,2);
     if Txc ~= 0
-        tempLossdB = zeros(size(Rxr,1),1);
-        for i = 1:numel(Rxr)
-            [losC{i},losR{i}] = bresenham(Txc,Txr,Rxc(i),Rxr(i)); %LOS between Tx &Rx
+        tempLossdB = zeros(size(currentPlanDetails.Rxr,1),1);
+        for i = 1:numel(currentPlanDetails.Rxr)
+            [losC{i},losR{i}] = bresenham(Txc,Txr,currentPlanDetails.Rxc(i),currentPlanDetails.Rxr(i)); %LOS between Tx &Rx
             for j = 1:numel(losC{i}(:))
                 losTemp(losR{i}(j),losC{i}(j)) = 1; % temporary line of sight image
             end
@@ -98,5 +95,5 @@ for h = 1:noOfTx
     end
 end % for h = 1:noOfTx
 
-meandB = sum(lossdB)./numel(Rxr);
+meandB = sum(lossdB)./numel(currentPlanDetails.Rxr);
 
