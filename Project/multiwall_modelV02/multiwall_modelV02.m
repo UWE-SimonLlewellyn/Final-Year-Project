@@ -52,7 +52,7 @@ clc
 % d0Cost231               = 1;      % Multi-wall model reference distance
 
 % for distance calculator
-GridSize = 10;
+GridSize = 20;
 meshNode.vert.num       = GridSize;             % Number of probs in the structure increase for better accuracy
 meshNode.horz.num       = GridSize;
 
@@ -82,7 +82,7 @@ noOfTx = 1;     % defalt is set to 0 will be changed at prompt later
 fitness = -100; 
 
 % calculate scale of diagram
-pathLength = 3; % meters
+pathLength = 1.5; % meters
 pathPixels = 110; % pixles or  
 pathUnit = pathLength./pathPixels; %pathUnit = meter per pixel
 
@@ -178,19 +178,17 @@ currentPlanDetails = currentPlanDetails.add(floorMesh, pathUnit,thinFloorPlanBW,
 %% Start of the GA
 %
 Starttime = now;
-MaxNumTx = 4;
-popSize = 15;
-generations = 100;
+MaxNumTx = 10;
+popSize = 25;
+generations = 50;
 grid = [GridSize,GridSize];
 cellSpace = 3;
 
 bestSolution = Solution;
-
-%create initial population and score
-[parent,geneLen,bestSolution ] = createPop(MaxNumTx,popSize,grid,cellSpace,currentPlanDetails);
-
-
-
+for g = 1:generations
+    %create initial population and score
+    [parent,geneLen,bestSolution ] = createPop(MaxNumTx,popSize,grid,cellSpace,currentPlanDetails);
+end
 
 
 
@@ -221,8 +219,7 @@ for i = 1:7
     colorbarLabels(i) = min(bestSolution.nodedBresults) + i .* ((max(bestSolution.nodedBresults)-min(bestSolution.nodedBresults))./7);
 end    
 colorbar('YTickLabel',num2str(int32(colorbarLabels')));
-% text(Txc,Txr,'belh2','Color','Black','FontSize',12);
-text(bestSolution.tableOfCoOrdinates(:,1),bestSolution.tableOfCoOrdinates(:,2),'Tx','Color','Black','FontSize',12);
+%text(bestSolution.tableOfCoOrdinates(:,1),bestSolution.tableOfCoOrdinates(:,2),'Tx','Color','Black','FontSize',12);
 title("final solution: " + bestSolution.meandB  + "(dbs), number of TX " + bestSolution.noTx + ", bestDualFitness = " + bestSolution.bestDualFitness );
 
 %%%%%%%%%%%%%%%%5  REFERENCES  %%%%%%%%%%

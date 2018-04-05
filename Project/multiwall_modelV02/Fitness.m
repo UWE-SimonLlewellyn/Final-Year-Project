@@ -18,9 +18,17 @@ tableOfTxPixelCoords =  zeros(MaxNumTx,2);
 
     % End point of the Algorithm 
     [meandB,nodedBresults] = prop(tableOfTxPixelCoords,currentPlanDetails,MaxNumTx);
+    %meandB = round(meandB);
     
-    dualFitness = meandB ./ noOfTx
-    meandB = round(meandB);
+    %normalalise the objectives
+    noramlisedMeandB = abs(meandB)./100;
+    normalisedNoOfTx = 1./noOfTx;
+    
+    dualFitness = (normalisedNoOfTx - noramlisedMeandB);
+    if dualFitness < 0
+       dualFitness = abs(dualFitness) ;
+    end
+    
     tempSolution = Solution;
 
     tempSolution = tempSolution.add(noOfTx, meandB, nodedBresults,tableOfTxPixelCoords, dualFitness);

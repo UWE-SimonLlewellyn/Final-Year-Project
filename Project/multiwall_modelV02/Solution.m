@@ -7,7 +7,7 @@ classdef Solution
         meandB
         nodedBresults
         tableOfCoOrdinates
-        bestDualFitness = -1000
+        bestDualFitness = 1000
     end
     
     methods
@@ -15,7 +15,8 @@ classdef Solution
             %SOLUTION Construct an instance of this class
             %   Detailed explanation goes here
             
-            if inputSolution.bestDualFitness > obj.bestDualFitness
+            if inputSolution.bestDualFitness < obj.bestDualFitness || ...
+                    ((inputSolution.bestDualFitness == obj.bestDualFitness) && (inputSolution.noTx < obj.noTx))
                 obj.noTx = inputSolution.noTx;
                 obj.meandB = inputSolution.meandB;
                 obj.nodedBresults = inputSolution.nodedBresults;
