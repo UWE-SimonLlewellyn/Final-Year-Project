@@ -8,7 +8,7 @@ classdef Solution
         nodedBresults
         tableOfCoOrdinates
         pixelCoOrds
-        dualFitness = 1000
+        dualFitness = -1000
     end
     
     methods
@@ -16,8 +16,7 @@ classdef Solution
             %SOLUTION Construct an instance of this class
             %   Detailed explanation goes here
             
-            if inputSolution.dualFitness < obj.dualFitness || ...
-                    ((inputSolution.dualFitness == obj.dualFitness) && (inputSolution.noTx < obj.noTx))
+            if inputSolution.dualFitness > obj.dualFitness 
                 obj.noTx = inputSolution.noTx;
                 obj.meandB = inputSolution.meandB;
                 obj.nodedBresults = inputSolution.nodedBresults;

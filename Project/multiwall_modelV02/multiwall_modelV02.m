@@ -16,45 +16,17 @@
 %   (autoWallDetection.m), (bresenham.m) to be present in MATLAB path
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Instructions!
-% - Make sure all the aforementioned files are in the MATLAB path.
-% - Run muiltiwall_modelV01.mat (this file), you have to chose an image of
-% the structure blueprint. For the multiwall model to work, walls should
-% all be presented by straight lines. Soon you will be asked to choose 2
-% points on the blue print. You have to select 2 points that lies on the
-% walls otherwise it keeps asking you to choose again. After this it show
-% you the wall you selected. Next you need to provide the actual size of
-% the wall you selected in real world. This is to calibrate the image.
-% - Next you will be asked to locate the Transmitter (Tx) by clicking on it's
-% location in the picture.
-% - You should get the result, depending on the mesh size you specified in
-% the Initilization.
-% - You can get a RSSI estimation if you know the transmission
-% power, and antenna gains, roughly. Otherwise you can set the TxPower,
-% antenna gains and antennaLoss to 0 and get the path loss (attenuation) only.
-% 
 
 %% INITIALIZATION  
 clear all
 clc
 
-% addedd to propiation.m
-% lightVel                = 3e8;      % Light velocity (m/s).
-% freq                    = 865.2e6;  % Hz
  demoMode                = 0;        % Showes further details if 1  
-% 
-% TxPower                 = 0;        % dBm or dB
-% antennaLoss             = 0;        % dB
-% TxAntennaGain           = 0 + antennaLoss ; % Gain of Transmitting antenna
-% RxAntennaGain           = TxAntennaGain;    % Gain of Receiving antenna
-% 
-% % Multi-Wall Model Parameters
-% d0Cost231               = 1;      % Multi-wall model reference distance
 
 % for distance calculator
-GridSize = 10;
-meshNode.vert.num       = GridSize;             % Number of probs in the structure increase for better accuracy
-meshNode.horz.num       = GridSize;
+GridSize = 20;
+meshNode.vert.num       = 10;             % Number of probs in the structure increase for better accuracy
+meshNode.horz.num       = 10;
 
 
 % Wall Detection Parameters (Change them wiselt if walls are not correctly detected)
@@ -78,7 +50,7 @@ wallAt(255) = round(sum(wallAt)./sum(wallAt>0));  % This is for intersecting wal
 %-------------------------------------------
 
 % calculate scale of diagram
-pathLength = 20; % meters
+pathLength = 5; % meters
 pathPixels = 110; % pixles or  
 pathUnit = pathLength./pathPixels; %pathUnit = meter per pixel
 
@@ -176,8 +148,8 @@ currentPlanDetails = currentPlanDetails.add(floorMesh, pathUnit,thinFloorPlanBW,
 %
 Starttime = now;
 MaxNumTx = 4;
-popSize = 20;
-generations = 100;
+popSize = 50;
+generations = 1;
 grid = [GridSize,GridSize];
 cellSpace = 2;
 
@@ -190,31 +162,25 @@ for g = 1:generations
   
     %selection s
     parent = SteadyState(parent,currentPlanDetails,MaxNumTx );    
-    
-    bestSolution = bestSolution.compare(tempBestSolution);
+   
     
     
     
 end
 
 
-  
-   % 
-    
-    
-
-
-
-
-
 Endtime = now;
 
 timedif = Endtime - Starttime;
+for i = 1:popSize
+    bestSolution = bestSolution.compare(parent(i));
+    disp("Tx: " + parent(i).noTx + " , MeanDB: " + parent(i).meandB + " , Fitness: " +  parent(i).dualFitness);
+end
 
 disp("Total different in time " + datestr(timedif,'HH:MM:SS.FFF'));
 
-%disp("final solution " + fitness + "      number of TX " + bestTX + "         bestDualFitness = " + bestDualFitness);
-    
+disp("BEST Tx: " + bestSolution.noTx +  " , MeanDB: " + bestSolution.meandB + " , Fitness: " +  bestSolution.dualFitness);
+
 %% Applying color map    
 % smallFSPLImage = mesh map values from transmission point
 smallFSPLImage = (reshape(bestSolution.nodedBresults,meshNode.vert.num, meshNode.horz.num));
@@ -232,9 +198,10 @@ for i = 1:7
     colorbarLabels(i) = min(bestSolution.nodedBresults) + i .* ((max(bestSolution.nodedBresults)-min(bestSolution.nodedBresults))./7);
 end    
 colorbar('YTickLabel',num2str(int32(colorbarLabels')));
-%text(bestSolution.tableOfCoOrdinates(:,1),bestSolution.tableOfCoOrdinates(:,2),'Tx','Color','Black','FontSize',12);
+text(bestSolution.pixelCoOrds(:,1),bestSolution.pixelCoOrds(:,2),'Tx','Color','Black','FontSize',12);
 title("final solution: " + bestSolution.meandB  + "(dbs), number of TX " + bestSolution.noTx + ", bestDualFitness = " + bestSolution.dualFitness );
 
 %%%%%%%%%%%%%%%%5  REFERENCES  %%%%%%%%%%
+%
 % http://uk.mathworks.com/matlabcentral/fileexchange/28190-bresenham-optimized-for-matlab/content/bresenham.m
 

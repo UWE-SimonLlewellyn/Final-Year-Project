@@ -66,36 +66,36 @@ end
 
 
 %Score fitness of children 
-child1 = Fitness(child1,currentPlanDetails,MaxNoTx);
-child2 = Fitness(child2,currentPlanDetails,MaxNoTx);
+child1 = PopSolution(child1,currentPlanDetails,MaxNoTx);
+child2 = PopSolution(child2,currentPlanDetails,MaxNoTx);
 
 temp = Solution;
 %Compare children to parents
 for i = 1:2
-    if parent1.meandB < parent2.meandB
-        if child1.meandB > child2.meandB
-            if parent1.meandB < child1.meandB
+    if parent1.dualFitness < parent2.dualFitness
+        if child1.dualFitness > child2.dualFitness
+            if parent1.dualFitness < child1.dualFitness
                 temp = parent1;
                 parent1 = child1;
                 child1 = temp;
             end
         else 
-            if parent1.meandB < child2.meandB
+            if parent1.dualFitness < child2.dualFitness
                 temp = parent1;
                 parent1 = child2;
                 child2 = temp;
             end
         end    
 
-    elseif parent1.meandB > parent2.meandB
-        if child1.meandB > child2.meandB
-            if parent2.meandB < child1.meandB
+    elseif parent1.dualFitness > parent2.dualFitness
+        if child1.dualFitness > child2.dualFitness
+            if parent2.dualFitness < child1.dualFitness
                 temp = parent2;
                 parent2 = child1;
                 child1 = temp;
             end         
         else 
-            if parent2.meandB < child2.meandB
+            if parent2.dualFitness < child2.dualFitness
                 temp = parent2;
                 parent2 = child2;
                 child2 = temp;

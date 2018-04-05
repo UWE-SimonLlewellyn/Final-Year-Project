@@ -33,7 +33,10 @@ function [population, solutionLen, bestSolution] = createPop(MaxNumTx,popSize,gr
    % k = 1;
     for  i = 1:popSize
         population(i).tableOfCoOrdinates = TxGridSpacing(MaxNumTx, grid(1,1), cellSpace);
-        population(i) = Fitness(population(i),currentPlanDetails,MaxNumTx);
+        population(i) = PopSolution(population(i),currentPlanDetails,MaxNumTx);
+        fitness = @multiObjectiveFitness;
+        nvars = 2;
+        [x,fval] = gamultiobj(fitness,nvars);
   
         bestSolution = bestSolution.compare(population(i)); %scores durrent fittest
     end

@@ -21,27 +21,23 @@ for i = 1:noOfTx
     Txc = tableOfTxCoords(i,1);  
     Txr = tableOfTxCoords(i,2);
     
-    if (Txc ~= 0) % if Txc == 0 means no fuurther Tx in solution
-        dRxTxr = currentPlanDetails.Rxr - Txr; % distance in terms of pixels
-        dRxTxc = currentPlanDetails.Rxc - Txc; % distance in terms of pixels 
-        tempNodeDistance = sqrt(dRxTxr.^2 + dRxTxc.^2) * currentPlanDetails.pathUnit; % distance in terms of meters
+    dRxTxr = currentPlanDetails.Rxr - Txr; % distance in terms of pixels
+    dRxTxc = currentPlanDetails.Rxc - Txc; % distance in terms of pixels 
+    tempNodeDistance = sqrt(dRxTxr.^2 + dRxTxc.^2) * currentPlanDetails.pathUnit; % distance in terms of meters
 
-        % used to compare the current Tx to node distances againt the previous
-        % placed Txs
-        if i==1
-            nodeDistance = tempNodeDistance;
-        else
-            % if temp(current) node is closer to Tx the value replaces the
-            % store value
-            for j = 1:numel(tempNodeDistance)
-                if tempNodeDistance(j,1) <  nodeDistance(j,1)
-                    nodeDistance(j,1) = tempNodeDistance(j,1); % var that is passed though to the rest 
-                end
-            end       
-        end
+    % used to compare the current Tx to node distances againt the previous
+    % placed Txs
+    if i==1
+        nodeDistance = tempNodeDistance;
     else
-        break;
-    end 
+        % if temp(current) node is closer to Tx the value replaces the
+        % store value
+        for j = 1:numel(tempNodeDistance)
+            if tempNodeDistance(j,1) <  nodeDistance(j,1)
+                nodeDistance(j,1) = tempNodeDistance(j,1); % var that is passed though to the rest 
+            end
+        end       
+    end
 end
 
 
