@@ -11,11 +11,12 @@ classdef PropPlan
         TxGridCentre
         Rxr
         Rxc
+        gridSize
     end
     
     
    methods
-        function obj = add(obj,floorMesh, pathUnit,thinFloorPlanBW,floorPlanGray, wallAt, TxGridCentre)
+        function obj = add(obj,floorMesh, pathUnit,thinFloorPlanBW,floorPlanGray, wallAt, TxGridCentre, gridSize)
             %SOLUTION Construct an instance of this class
             %   Detailed explanation goes here
             
@@ -26,6 +27,7 @@ classdef PropPlan
             obj.wallAt = wallAt;
             obj.TxGridCentre = TxGridCentre;
             [obj.Rxr,obj.Rxc] = find(floorMesh == 1); % finding the nodes 
+            obj.gridSize = gridSize;
         end
    end
 end

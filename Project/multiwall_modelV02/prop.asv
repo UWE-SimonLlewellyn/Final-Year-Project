@@ -59,7 +59,7 @@ for h = 1:noOfTx
     losR = cell(size(currentPlanDetails.Rxr,1),1);
     Txc = tableOfTxCoords(h,1);  
     Txr = tableOfTxCoords(h,2);
-    if Txc ~= 0 && Txr ~= 0
+    if Txc ~= 0
         tempLossdB = zeros(size(currentPlanDetails.Rxr,1),1);
         for i = 1:numel(currentPlanDetails.Rxr)
             [losC{i},losR{i}] = bresenham(Txc,Txr,currentPlanDetails.Rxc(i),currentPlanDetails.Rxr(i)); %LOS between Tx &Rx
@@ -90,10 +90,11 @@ for h = 1:noOfTx
             end  
             losTemp = zeros(size(currentPlanDetails.thinFloorPlanBW)); % clears the LOS image
         end
-     end
+    else
+        break;
+    end
 end % for h = 1:noOfTx
 
 mindb =min(lossdB);
-maxdb = max(lossdB);
 meandB = sum(lossdB)./numel(currentPlanDetails.Rxr);
 

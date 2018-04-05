@@ -5,14 +5,14 @@ function X = TxGridSpacing(MaxNumTx,GridSize,cellSpace)
 
 
     noOfTx = randi([1,MaxNumTx]);
-    solution =  zeros(MaxNumTx,2);
+    gridCoordinates =  zeros(MaxNumTx,2);
     
     i = 1;   
     while i <= noOfTx
        count = i;
        tempXY = randi([1,GridSize],1,2);
        for i10 = 1:count 
-           tempA = solution(i10,:);  
+           tempA = gridCoordinates(i10,:);  
            sumTempXY = tempXY(1,1) + tempXY(1,2);
            tempSumTable = tempA(1,1) + tempA(1,2);
            if tempXY(1,1) > (tempA(1,1) + cellSpace) || tempXY(1,1) < (tempA(1,1) - cellSpace) ...
@@ -27,10 +27,10 @@ function X = TxGridSpacing(MaxNumTx,GridSize,cellSpace)
            end 
        end
        if validTXcell == true
-             solution(i,:) = tempXY;
+             gridCoordinates(i,:) = tempXY;
              i = i+1;
        end
     end
-    X = solution;
+    X = gridCoordinates;
 end
 

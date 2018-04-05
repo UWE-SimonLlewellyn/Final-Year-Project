@@ -23,19 +23,30 @@ function [population, solutionLen, bestSolution] = createPop(MaxNumTx,popSize,gr
     solutionLen = ((MaxNumTx * 2) + 1);
     % geneLen : (MaxNumTx * 2) = allows for X & Y corodunate for each Tx then
     % + 1 for fitness
+    population = zeros(1,popSize);
+    population = Solution.empty(size(popSize));
 
-    population = Solution.empty(popSize,0);
-    % creates a empty array of Solutions the size of popsize
+    % creates a zeroed table popsize, hold an array of solutions the size
+    % totaling popsize
 
 %% population Gene
     % populated using the grid spacing funtion
     bestSolution = Solution;
    % k = 1;
     for  i = 1:popSize
-        population(i).tableOfCoOrdinates = TxGridSpacing(MaxNumTx, grid(1,1), cellSpace);
-        population(i) = Fitness(population(i),currentPlanDetails,MaxNumTx);
-  
-        bestSolution = bestSolution.compare(population(i)); %scores durrent fittest
+        gridCoordinates = TxGridSpacing(MaxNumTx, grid(1,1), cellSpace);
+        currentSolutionObj = Fitness(gridCoordinates,currentPlanDetails,MaxNumTx);
+        population(i) = currentSolutionObj;
+%         for j =  1:MaxNumTx
+%             population(1,k) = gridCoordinates(j,1);
+%             k=k+1;
+%             population(1,k) = gridCoordinates(j,2); 
+%             k=k+1;
+%         end
+%         population(1,k) = currentSolutionObj.bestDualFitness;
+%         k = k+1;              
+        bestSolution = bestSolution.compare(currentSolutionObj);
+
     end
 
 end

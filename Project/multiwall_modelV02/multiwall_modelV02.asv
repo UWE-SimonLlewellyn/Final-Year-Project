@@ -168,8 +168,7 @@ end
 %% Combining all plan details into an object
 
 currentPlanDetails = PropPlan;
-currentPlanDetails = currentPlanDetails.add(floorMesh, pathUnit,thinFloorPlanBW,floorPlanGray,...
-    wallAt, TxGridCentre,GridSize);
+currentPlanDetails = currentPlanDetails.add(floorMesh, pathUnit,thinFloorPlanBW,floorPlanGray, wallAt, TxGridCentre);
 
 
 %% Start of the GA
@@ -177,7 +176,7 @@ currentPlanDetails = currentPlanDetails.add(floorMesh, pathUnit,thinFloorPlanBW,
 Starttime = now;
 MaxNumTx = 4;
 popSize = 20;
-generations = 100;
+generations = 1;
 grid = [GridSize,GridSize];
 cellSpace = 2;
 
@@ -187,21 +186,15 @@ cellSpace = 2;
 bestSolution = Solution;
 for g = 1:generations
     
-  
-    %selection s
-    parent = SteadyState(parent,currentPlanDetails,MaxNumTx );    
+    
+    parent = SteadyState(parent,currentPlanDetails,MaxNumTx );
+    
     
     bestSolution = bestSolution.compare(tempBestSolution);
     
     
     
 end
-
-
-  
-   % 
-    
-    
 
 
 
