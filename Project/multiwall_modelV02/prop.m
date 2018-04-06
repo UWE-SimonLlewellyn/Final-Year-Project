@@ -2,7 +2,7 @@
 
 
 
-function [meandB,lossdB] = prop(tableOfTxCoords,currentPlanDetails,MaxNumTx)
+function [meandB,mindB,lossdB] = prop(tableOfTxCoords,currentPlanDetails,MaxNumTx)
 %% initiation
 lightVel                = 3e8;      % Light velocity (m/s).
 freq                    = 865.2e6;  % Hz
@@ -103,5 +103,6 @@ for h = 1:count
         end
 end % for h = 1:noOfTx
 
+mindB = min(lossdB);
 meandB = sum(lossdB)./numel(currentPlanDetails.Rxr);
 

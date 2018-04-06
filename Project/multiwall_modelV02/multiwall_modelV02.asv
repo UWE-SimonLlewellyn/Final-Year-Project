@@ -21,8 +21,8 @@
 clear all
 clc
 
-MaxNumTx = 6;
-popSize = 20;
+MaxNumTx = 10;
+popSize = 50;
 generations = 300;
 cellSpace = 2;
 mutationRate = 0.05; % number between 0.0 and 1.0 

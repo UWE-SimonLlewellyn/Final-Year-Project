@@ -1,4 +1,4 @@
-function [parentPop,tempBestSolution] = SteadyState(parentPop,currentPlanDetails,MaxNoTx,tempBestSolution)
+function [parentPop,tempBestSolution] = SteadyState(parentPop,currentPlanDetails,MaxNoTx,tempBestSolution, mutationRate)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -25,8 +25,8 @@ end
 % CHILD 1
 for i = 1:MaxNoTx      
     for j = 1:2
-    c = randi([1,(MaxNoTx.*2)]);
-        if c == 1
+    c = rand(1);
+        if c <= mutationRate
            if  child1.tableOfCoOrdinates(i,j) == currentPlanDetails.gridSize
                child1.tableOfCoOrdinates(i,j) = child1.tableOfCoOrdinates(i,j) -1;
            elseif child1.tableOfCoOrdinates(i,j) == 0
