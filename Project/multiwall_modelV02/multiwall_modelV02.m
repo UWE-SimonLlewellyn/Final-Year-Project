@@ -156,9 +156,9 @@ currentPlanDetails = currentPlanDetails.add(floorMesh, pathUnit,thinFloorPlanBW,
 %% Start of the GA
 %
 Starttime = now;
-MaxNumTx = 6;
-popSize = 20;
-generations = 50;
+MaxNumTx = 10;
+popSize = 50;
+generations = 500;
 grid = [GridSize,GridSize];
 cellSpace = 2;
 
