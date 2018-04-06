@@ -57,13 +57,21 @@ losTemp = zeros(size(currentPlanDetails.thinFloorPlanBW));
 wallsType = cell(size(currentPlanDetails.Rxr,1),1); % pre-defining
 numWalls = zeros(size(currentPlanDetails.Rxr,1),1);    
 lossdB = zeros(size(currentPlanDetails.Rxr,1),1);
+count = 0;
+sanitisedTable = zeros(MaxNumTx,2);
+for k = 1:MaxNumTx
+    if tableOfTxCoords(k,1) ~= 0 && tableOfTxCoords(k,2) ~=0
+        count = count +1;
+        sanitisedTable(count,:) = tableOfTxCoords(k,:);
+    end
+end
 
-for h = 1:MaxNumTx
+
+for h = 1:count
     losC = cell(size(currentPlanDetails.Rxr,1),1);
     losR = cell(size(currentPlanDetails.Rxr,1),1);
-    Txc = tableOfTxCoords(h,1);  
-    Txr = tableOfTxCoords(h,2);
-    if Txc ~= 0 && Txr ~= 0
+    Txc = sanitisedTable(h,1);  
+    Txr = sanitisedTable(h,2);
         tempLossdB = zeros(size(currentPlanDetails.Rxr,1),1);
         for i = 1:numel(currentPlanDetails.Rxr)
             [losC{i},losR{i}] = bresenham(Txc,Txr,currentPlanDetails.Rxc(i),currentPlanDetails.Rxr(i)); %LOS between Tx &Rx
@@ -93,7 +101,6 @@ for h = 1:MaxNumTx
             end  
             losTemp = zeros(size(currentPlanDetails.thinFloorPlanBW)); % clears the LOS image
         end
-     end
 end % for h = 1:noOfTx
 
 meandB = sum(lossdB)./numel(currentPlanDetails.Rxr);

@@ -1,4 +1,4 @@
-function [population, solutionLen, bestSolution] = createPop(MaxNumTx,popSize,grid, cellSpace,currentPlanDetails)
+function [population, solutionLen, bestSolution] = createPop(gaMode,MaxNumTx,popSize,grid, cellSpace,currentPlanDetails)
 %This is for creating a full non binary solutions.
 %CREATEPOP inital random population to intitiate the GA
 %   population will consist of multiple random solutions based upon the
@@ -32,7 +32,17 @@ function [population, solutionLen, bestSolution] = createPop(MaxNumTx,popSize,gr
     bestSolution = Solution;
    % k = 1;
     for  i = 1:popSize
-        population(i).tableOfCoOrdinates = TxGridSpacing(MaxNumTx, grid(1,1), cellSpace);
+        if gaMode == 1
+            population(i).tableOfCoOrdinates = TxGridSpacing(MaxNumTx, grid(1,1), cellSpace);
+        else
+            noTx = randi([1,MaxNumTx]);
+            tempTable = zeros(MaxNumTx,2);
+            for j = 1:noTx
+                tempTable(j,1) = randi([1,grid(1,1)]); 
+                tempTable(j,2) = randi([1,grid(1,1)]); 
+            end
+            population(i).tableOfCoOrdinates = tempTable;
+        end
         population(i) = PopSolution(population(i),currentPlanDetails,MaxNumTx);
         bestSolution = bestSolution.compare(population(i)); %scores durrent fittest
     end

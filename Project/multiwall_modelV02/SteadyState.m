@@ -1,4 +1,4 @@
-function [parentPop] = SteadyState(parentPop,currentPlanDetails,MaxNoTx)
+function [parentPop,tempBestSolution] = SteadyState(parentPop,currentPlanDetails,MaxNoTx,tempBestSolution)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -107,6 +107,9 @@ end
 
 parentPop(a) = parent1;
 parentPop(b) = parent2;
+
+tempBestSolution = tempBestSolution.compare(parent1);
+tempBestSolution = tempBestSolution.compare(parent2);
 
 end
 

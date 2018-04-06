@@ -21,7 +21,7 @@
 clear all
 clc
 
- gaMode                = 1;        % 0 = binary, 1 = full grid
+ gaMode                = 1;        % 0 = random values , 1 = grid spacing initiation
  
  
 
@@ -106,9 +106,6 @@ floorMesh(floor(linspace(1,size(floorPlanBW,1),meshNode.vert.num)),...
 [floorPlanGray,countedWalls] = autoWallDetection(~originalFloorPlan,wallAt,thetaRes,minWallLength,fillGap); % Detecting all the walls Generates floorPlanGray where different wall are index coded in the gray image
 
 
-
-
-
 %% Creating Grid for placement
 
 % TxGrid hold the start and end cooridantes of the 
@@ -160,28 +157,54 @@ currentPlanDetails = currentPlanDetails.add(floorMesh, pathUnit,thinFloorPlanBW,
 %
 Starttime = now;
 MaxNumTx = 6;
-popSize = 50;
-generations = 200;
+popSize = 20;
+generations = 50;
 grid = [GridSize,GridSize];
 cellSpace = 2;
 
-if gaMode == 1
-    %create initial population and score
-    [parent,geneLen,tempBestSolution ] = createPop(MaxNumTx,popSize,grid,cellSpace,currentPlanDetails);
-else
-    parent = Induvidual.empty(popSize,0);
-    
-    
-end
-bestSolution = Solution;
-for g = 1:generations
-    if gaMode == 1      
-           parent = SteadyState(parent,currentPlanDetails,MaxNumTx );    
-     end
-    
-    
-end
+%% TEST SPACE
 
+% testSol = Solution;
+% testSol.tableOfCoOrdinates = [0,13;3,20;11,4;0,0;0,0;0,0];
+% 
+% testSol = PopSolution(testSol,currentPlanDetails,MaxNumTx);
+% disp("Tx: " + testSol.noTx + " , MeanDB: " + testSol.meandB + " , Fitness: " +  testSol.dualFitness);
+% 
+% % smallFSPLImage = mesh map values from transmission point
+% smallFSPLImage = (reshape(testSol.nodedBresults,meshNode.vert.num, meshNode.horz.num));
+% % FSPLFullImage -db level for value of singal on the map. 
+% FSPLFullImage = (imresize(smallFSPLImage,[size(floorPlan,1),size(floorPlan,2)],'method','cubic'));
+% % Converts to a num 0.0-1.0 high is the strongest signal
+% FSPLFullImage = mat2gray(FSPLFullImage);
+% figure('Name','Path loss method ');
+% z = imoverlay(FSPLFullImage,~originalFloorPlan,[0,0,0]);
+% imshow(rgb2gray(z))
+% colormap(gca,'jet');
+% 
+% 
+% for i = 1:7
+%     colorbarLabels(i) = min(testSol.nodedBresults) + i .* ((max(testSol.nodedBresults)-min(testSol.nodedBresults))./7);
+% end    
+% colorbar('YTickLabel',num2str(int32(colorbarLabels')));
+% text(testSol.pixelCoOrds(:,1),testSol.pixelCoOrds(:,2),'Tx','Color','Black','FontSize',12);
+% title("final solution: " + testSol.meandB  + "(dbs), number of TX " + testSol.noTx + ", bestDualFitness = " + testSol.dualFitness );
+
+
+%%
+
+tableOfBestSolutions = Solution.empty(generations+1,0);
+%create initial population and score
+[parent,geneLen,tempBestSolution ] = createPop(gaMode,MaxNumTx,popSize,grid,cellSpace,currentPlanDetails);
+tableOfBestSolutions(1) = tempBestSolution;
+bestSolution = Solution;
+for g = 1:generations     
+     [parent,bestOfChildren] = SteadyState(parent,currentPlanDetails,MaxNumTx ,tempBestSolution);    
+     if tableOfBestSolutions(g).dualFitness > bestOfChildren.dualFitness
+            tableOfBestSolutions(g+1) = tableOfBestSolutions(g);
+     else
+         tableOfBestSolutions(g+1) = bestOfChildren;
+     end
+end
 
 Endtime = now;
 
