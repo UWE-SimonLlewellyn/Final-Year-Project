@@ -1,8 +1,5 @@
-% Adapted code made by 
 
-
-
-function [meandB,lossdB] = prop(tableOfTxCoords,currentPlanDetails,MaxNumTx)
+function [meandB,lossdB] = prop(tableOfTxCoords,currentPlanDetails,noOfTx)
 %% initiation
 lightVel                = 3e8;      % Light velocity (m/s).
 freq                    = 865.2e6;  % Hz
@@ -17,34 +14,33 @@ d0Cost231               = 1;      % Multi-wall model reference distance
 
 %% Calculating mesh points distance from Tx
 % 
+% AMEND THIS TO CALC DISTANCE FROM MULTIPLE POINTS
 %
-count = 0;
-for i = 1:MaxNumTx
+
+%%Sanitise tableOfTxCoords
+% as during the algorithm there can be incomplete grid refrences 
+
+
+for i = 1:noOfTx
     Txc = tableOfTxCoords(i,1);  
     Txr = tableOfTxCoords(i,2);
-    % checks of 0 in grid coords and skips them if present.
-    if Txc ~= 0 && Txr ~= 0
-        dRxTxr = currentPlanDetails.Rxr - Txr; % distance in terms of pixels
-        dRxTxc = currentPlanDetails.Rxc - Txc; % distance in terms of pixels 
-        tempNodeDistance = sqrt(dRxTxr.^2 + dRxTxc.^2) * currentPlanDetails.pathUnit; % distance in terms of meters
+    
+    dRxTxr = currentPlanDetails.Rxr - Txr; % distance in terms of pixels
+    dRxTxc = currentPlanDetails.Rxc - Txc; % distance in terms of pixels 
+    tempNodeDistance = sqrt(dRxTxr.^2 + dRxTxc.^2) * currentPlanDetails.pathUnit; % distance in terms of meters
 
-        % used to compare the current Tx to node distances againt the previous
-        % placed Txs
-        % seperate counter used for IF as loop itterates over the possible
-        % amount of Tx. If previous IF (Txc ~= 0 && Txr ~= 0) is false
-        % nodeDistance is not assigned.
-        count = count + 1;
-        if count==1
-            nodeDistance = tempNodeDistance;
-        else
-            % if temp(current) node is closer to Tx the value replaces the
-            % store value
-            for j = 1:numel(tempNodeDistance)
-                if tempNodeDistance(j,1) <  nodeDistance(j,1)
-                    nodeDistance(j,1) = tempNodeDistance(j,1); % var that is passed though to the rest 
-                end
-            end       
-        end
+    % used to compare the current Tx to node distances againt the previous
+    % placed Txs
+    if i==1
+        nodeDistance = tempNodeDistance;
+    else
+        % if temp(current) node is closer to Tx the value replaces the
+        % store value
+        for j = 1:numel(tempNodeDistance)
+            if tempNodeDistance(j,1) <  nodeDistance(j,1)
+                nodeDistance(j,1) = tempNodeDistance(j,1); % var that is passed though to the rest 
+            end
+        end       
     end
 end
 
@@ -58,7 +54,7 @@ wallsType = cell(size(currentPlanDetails.Rxr,1),1); % pre-defining
 numWalls = zeros(size(currentPlanDetails.Rxr,1),1);    
 lossdB = zeros(size(currentPlanDetails.Rxr,1),1);
 
-for h = 1:MaxNumTx
+for h = 1:noOfTx
     losC = cell(size(currentPlanDetails.Rxr,1),1);
     losR = cell(size(currentPlanDetails.Rxr,1),1);
     Txc = tableOfTxCoords(h,1);  
@@ -83,6 +79,7 @@ for h = 1:MaxNumTx
             tempLossdB(i) = ((20 * log10(4*pi.*nodeDistance(i).*freq./lightVel) .* (nodeDistance(i) > d0Cost231)) + ((nodeDistance(i) < d0Cost231) .* 20 * log10(4*pi.*d0Cost231.*freq./lightVel)) ) ...
                 + abs(wallLoss);
                 tempLossdB(i) = TxPower - tempLossdB(i) + RxAntennaGain + TxAntennaGain;
+
 
             if h==1
                 lossdB = tempLossdB;

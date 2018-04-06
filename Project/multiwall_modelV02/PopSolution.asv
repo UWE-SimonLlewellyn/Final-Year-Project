@@ -16,14 +16,21 @@ solution.pixelCoOrds  =  zeros(MaxNumTx,2);
     end
 
     % End point of the Algorithm 
-    [meandB,nodedBresults] = prop(solution.pixelCoOrds,currentPlanDetails,MaxNumTx);
+    [meandB,nodedBresults,mindb,maxdb] = prop(solution.pixelCoOrds,currentPlanDetails,MaxNumTx);
+    %meandB = round(meandB);
+
+    mindb = -120;
+    maxdb = -30;
+    
 
     weight1 = 0.7;
     weight2 = 0.3;
 
     dualFitness =  (weight1 * noOfTx) - (weight2 * meandB);
 
+
     solution = solution.add(noOfTx, meandB, nodedBresults,solution.pixelCoOrds, dualFitness);
+
     
 end
 

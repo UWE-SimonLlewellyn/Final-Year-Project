@@ -1,5 +1,5 @@
 function [population, solutionLen, bestSolution] = createPop(MaxNumTx,popSize,grid, cellSpace,currentPlanDetails)
-%FITNESS Summary of this function goes here)
+%This is for creating a full non binary solutions.
 %CREATEPOP inital random population to intitiate the GA
 %   population will consist of multiple random solutions based upon the
 %   passed parameters.
@@ -21,23 +21,19 @@ function [population, solutionLen, bestSolution] = createPop(MaxNumTx,popSize,gr
 
 %% create blank Gene
     solutionLen = ((MaxNumTx * 2) + 1);
-    % geneLen : (MaxNumTx * 2) = allows for X & Y corodunate for each Tx then
+    % geneLen : (MaxNumTx * 2) = allows for X & Y coords for each Tx then
     % + 1 for fitness
 
     population = Solution.empty(popSize,0);
     % creates a empty array of Solutions the size of popsize
 
-%% population Gene
+%% population Gene 
     % populated using the grid spacing funtion
     bestSolution = Solution;
    % k = 1;
     for  i = 1:popSize
         population(i).tableOfCoOrdinates = TxGridSpacing(MaxNumTx, grid(1,1), cellSpace);
         population(i) = PopSolution(population(i),currentPlanDetails,MaxNumTx);
-        fitness = @multiObjectiveFitness;
-        nvars = 2;
-        [x,fval] = gamultiobj(fitness,nvars);
-  
         bestSolution = bestSolution.compare(population(i)); %scores durrent fittest
     end
 
