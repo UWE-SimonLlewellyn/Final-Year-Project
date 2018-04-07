@@ -112,10 +112,12 @@ else
 end
 
 %replace worst with new soltuion
+% worset solution  = largest value 
 index = 0;
-testValue = 1000;
-for int i = 1:numel(parentPop);
-    if parentpop(i).dualFitness < testValue
+testValue = 0;
+for i = 1:numel(parentPop)
+    if parentPop(i).dualFitness > testValue
+        testValue = parentPop(i).dualFitness;
         index = i;
     end
 end

@@ -21,11 +21,14 @@
 clear all
 clc
 
-MaxNumTx = 4;
-popSize = 50;
-generations = 1500;
-cellSpace = 2;
+MaxNumTx = 10;
+popSize = 10;
+generations = 20;
+cellSpace = 0;
 mutationRate = 1./MaxNumTx; % number between 0.0 and 1.0 
+% calculate scale of diagram
+pathLength = 1.5; % meters
+pathPixels = 50; % pixles or 
 
  gaMode                = 1;        % 0 = random values , 1 = grid spacing initiation
  
@@ -57,9 +60,7 @@ wallAt(255) = round(sum(wallAt)./sum(wallAt>0));  % This is for intersecting wal
 % Added vars for UWE work
 %-------------------------------------------
 
-% calculate scale of diagram
-pathLength = 2; % meters
-pathPixels = 50; % pixles or  
+ 
 pathUnit = pathLength./pathPixels; %pathUnit = meter per pixel
 
 %% Reading the image
@@ -217,6 +218,17 @@ for i = 1:popSize
     disp("Tx: " + parent(i).noTx + " , MeanDB: " + parent(i).meandB + " , Fitness: " +  parent(i).dualFitness);
 end
 
+% sanitize the final coordiate list to remove blank coords
+finaltable = zeros(bestSolution.noTx,2);
+count= 0;
+for i = 1:MaxNumTx
+    if bestSolution.pixelCoOrds(i,1) ~= 0 &&...
+            bestSolution.pixelCoOrds(i,2) ~= 0
+    count = count +1;
+    finaltable(count,:) = bestSolution.pixelCoOrds(i,:);
+    end
+end
+
 disp("Total different in time " + datestr(timedif,'HH:MM:SS.FFF'));
 
 disp("BEST Tx: " + bestSolution.noTx +  " , MeanDB: " + bestSolution.meandB + " , Fitness: " +  bestSolution.dualFitness);
@@ -238,7 +250,7 @@ for i = 1:7
     colorbarLabels(i) = min(bestSolution.nodedBresults) + i .* ((max(bestSolution.nodedBresults)-min(bestSolution.nodedBresults))./7);
 end    
 colorbar('YTickLabel',num2str(int32(colorbarLabels')));
-text(bestSolution.pixelCoOrds(:,1),bestSolution.pixelCoOrds(:,2),'Tx','Color','Black','FontSize',12);
+text(finaltable(:,1),finaltable(:,2),'Tx','Color','Black','FontSize',12);
 title("final solution: " + bestSolution.meandB  + "(dbs), number of TX " + bestSolution.noTx + ", bestDualFitness = " + bestSolution.dualFitness );
 
 %%%%%%%%%%%%%%%%5  REFERENCES  %%%%%%%%%%
