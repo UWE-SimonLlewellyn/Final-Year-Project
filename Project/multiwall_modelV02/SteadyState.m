@@ -1,14 +1,11 @@
-function [parentPop,tempBestSolution] = SteadyState(parentPop,currentPlanDetails,MaxNoTx,tempBestSolution, mutationRate)
+function [parentPop,bestOfChildren] = SteadyState(parentPop,currentPlanDetails,MaxNoTx, mutationRate)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 
-p_size = numel(parentPop);
 
-a = randi([1,p_size]);
-b = randi([1,p_size]);
-
-parent1 = parentPop(a);
-parent2 = parentPop(b);
+% selection
+parent1 = tournement(parentPop);
+parent2 = tournement(parentPop);
 child1 = parent1;
 child2 = parent2;
 
@@ -70,46 +67,60 @@ child1 = PopSolution(child1,currentPlanDetails,MaxNoTx);
 child2 = PopSolution(child2,currentPlanDetails,MaxNoTx);
 
 temp = Solution;
-%Compare children to parents
-for i = 1:2
-    if parent1.dualFitness > parent2.dualFitness
-        if child1.dualFitness < child2.dualFitness
-            if parent1.dualFitness > child1.dualFitness
-                temp = parent1;
-                parent1 = child1;
-                child1 = temp;
-            end
-        else 
-            if parent1.dualFitness > child2.dualFitness
-                temp = parent1;
-                parent1 = child2;
-                child2 = temp;
-            end
-        end    
+% %Compare children to parents
+% for i = 1:2
+%     if parent1.dualFitness > parent2.dualFitness
+%         if child1.dualFitness < child2.dualFitness
+%             if parent1.dualFitness > child1.dualFitness
+%                 temp = parent1;
+%                 parent1 = child1;
+%                 child1 = temp;
+%             end
+%         else 
+%             if parent1.dualFitness > child2.dualFitness
+%                 temp = parent1;
+%                 parent1 = child2;
+%                 child2 = temp;
+%             end
+%         end    
+% 
+%     elseif parent1.dualFitness < parent2.dualFitness
+%         if child1.dualFitness > child2.dualFitness
+%             if parent2.dualFitness > child1.dualFitness
+%                 temp = parent2;
+%                 parent2 = child1;
+%                 child1 = temp;
+%             end         
+%         else 
+%             if parent2.dualFitness > child2.dualFitness
+%                 temp = parent2;
+%                 parent2 = child2;
+%                 child2 = temp;
+%             end
+%         end
+% 
+%     end
+% end
+% 
+% parentPop(a) = parent1;
+% parentPop(b) = parent2;
 
-    elseif parent1.dualFitness < parent2.dualFitness
-        if child1.dualFitness > child2.dualFitness
-            if parent2.dualFitness > child1.dualFitness
-                temp = parent2;
-                parent2 = child1;
-                child1 = temp;
-            end         
-        else 
-            if parent2.dualFitness > child2.dualFitness
-                temp = parent2;
-                parent2 = child2;
-                child2 = temp;
-            end
-        end
+if child1.dualFitness > child2.dualFitness
+    bestOfChildren = child2;
+else
+    bestOfChildren = child1;
+end
 
+%replace worst with new soltuion
+index = 0;
+testValue = 1000;
+for int i = 1:numel(parentPop);
+    if parentpop(i).dualFitness < testValue
+        index = i;
     end
 end
 
-parentPop(a) = parent1;
-parentPop(b) = parent2;
-
-tempBestSolution = tempBestSolution.compare(parent1);
-tempBestSolution = tempBestSolution.compare(parent2);
+parentPop(index) = bestOfChildren;
 
 end
 

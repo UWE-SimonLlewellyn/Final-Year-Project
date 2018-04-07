@@ -23,9 +23,9 @@ clc
 
 MaxNumTx = 4;
 popSize = 50;
-generations = 1000;
+generations = 1500;
 cellSpace = 2;
-mutationRate = 0.05; % number between 0.0 and 1.0 
+mutationRate = 1./MaxNumTx; % number between 0.0 and 1.0 
 
  gaMode                = 1;        % 0 = random values , 1 = grid spacing initiation
  
@@ -195,17 +195,17 @@ grid = [GridSize,GridSize];
 
 %%
 
-tableOfBestSolutions = Solution.empty(generations+1,0);
+tableOfBestSolutions = zeros(generations+1,1);
 %create initial population and score
 [parent,geneLen,tempBestSolution ] = createPop(gaMode,MaxNumTx,popSize,grid,cellSpace,currentPlanDetails);
-tableOfBestSolutions(1) = tempBestSolution;
+tableOfBestSolutions(1) = tempBestSolution.dualFitness;
 bestSolution = Solution;
-for g = 1:generations     
-     [parent,bestOfChildren] = SteadyState(parent,currentPlanDetails,MaxNumTx ,tempBestSolution,mutationRate);    
-     if tableOfBestSolutions(g).dualFitness > bestOfChildren.dualFitness
+for g = 1:generations 
+     [parent,bestOfChildren] = SteadyState(parent,currentPlanDetails,MaxNumTx ,mutationRate);    
+     if tableOfBestSolutions(g) < bestOfChildren.dualFitness
             tableOfBestSolutions(g+1) = tableOfBestSolutions(g);
      else
-         tableOfBestSolutions(g+1) = bestOfChildren;
+         tableOfBestSolutions(g+1) = bestOfChildren.dualFitness;
      end
 end
 
