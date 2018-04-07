@@ -19,8 +19,8 @@ solution.pixelCoOrds  =  zeros(MaxNumTx,2);
     [meandB,mindB,nodedBresults] = prop(solution.pixelCoOrds,currentPlanDetails,MaxNumTx);
 
     weight1 = 0.7;
-    weight2 = 0.15;
-    weight3 = 0.17;
+    weight2 = 0.2;
+    weight3 = 0.1;
 
     dualFitness =  (weight1 * noOfTx) - (weight2 * meandB)  -  (weight3 * mindB);
 

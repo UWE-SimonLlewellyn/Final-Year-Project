@@ -46,8 +46,8 @@ end
 % CHILD 2
 for i = 1:MaxNoTx    
     for j = 1:2
-    c = randi([1,(MaxNoTx.*2)]);
-        if c == 1
+    c = rand(1);
+        if c == mutationRate
            if  child2.tableOfCoOrdinates(i,j) == currentPlanDetails.gridSize
                child2.tableOfCoOrdinates(i,j) = child2.tableOfCoOrdinates(i,j) - 1;
            elseif child2.tableOfCoOrdinates(i,j) == 0

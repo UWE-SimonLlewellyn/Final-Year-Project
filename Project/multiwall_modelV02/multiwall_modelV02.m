@@ -21,9 +21,9 @@
 clear all
 clc
 
-MaxNumTx = 6;
-popSize = 20;
-generations = 300;
+MaxNumTx = 4;
+popSize = 50;
+generations = 1000;
 cellSpace = 2;
 mutationRate = 0.05; % number between 0.0 and 1.0 
 
@@ -58,7 +58,7 @@ wallAt(255) = round(sum(wallAt)./sum(wallAt>0));  % This is for intersecting wal
 %-------------------------------------------
 
 % calculate scale of diagram
-pathLength = 10; % meters
+pathLength = 2; % meters
 pathPixels = 50; % pixles or  
 pathUnit = pathLength./pathPixels; %pathUnit = meter per pixel
 
