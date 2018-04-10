@@ -38,8 +38,7 @@ function [population, solutionLen, bestSolution] = createPop(gaMode,MaxNumTx,pop
             noTx = randi([1,MaxNumTx]);
             tempTable = zeros(MaxNumTx,2);
             for j = 1:noTx
-                tempTable(j,1) = randi([1,grid(1,1)]); 
-                tempTable(j,2) = randi([1,grid(1,1)]); 
+                tempTable(j,:) = randi([1,grid(1,1)],1,2);
             end
             population(i).tableOfCoOrdinates = tempTable;
         end

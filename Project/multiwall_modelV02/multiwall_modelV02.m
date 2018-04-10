@@ -21,9 +21,9 @@
 clear all
 clc
 
-MaxNumTx = 10;
-popSize = 10;
-generations = 20;
+MaxNumTx = 2;
+popSize = 50;
+generations = 500;
 cellSpace = 0;
 mutationRate = 1./MaxNumTx; % number between 0.0 and 1.0 
 % calculate scale of diagram
@@ -73,7 +73,7 @@ catch
 end
 floorPlan = imread([filePath,fileName]);
 floorPlanBW = ~im2bw(floorPlan);
-
+% look to resizing the image to reduce computational tiem
 
 
 % adjusting the image if required
