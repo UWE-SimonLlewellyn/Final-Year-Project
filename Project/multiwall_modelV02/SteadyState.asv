@@ -42,13 +42,12 @@ for i = x_over:count
       child2gene(i,1) = temp;
 end
 
-k=1;
 for i = 1:MaxNoTx
     parent1.tableOfCoOrdinates(i,1)= child1gene(k,1);
     parent2.tableOfCoOrdinates(i,1) = child2gene(k,1);
     k=k+1;
-    parent1.tableOfCoOrdinates(i,2) = child1gene(k,1);
-    parent2.tableOfCoOrdinates(i,2) = child2gene(k,1);
+    child1gene(k,1) = parent1.tableOfCoOrdinates(i,2);
+    child2gene(k,1) = parent2.tableOfCoOrdinates(i,2);
     k=k+1;
 end
 

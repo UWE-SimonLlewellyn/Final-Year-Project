@@ -1,3 +1,8 @@
+% Name:         Simon Llewellyn
+% Student No.:  04971824
+% Project:      Optimisation of Wireless Network Access Point Positioning Using Artificial Intelligence
+
+
 classdef PropPlan
     %UNTITLED Summary of this class goes here
     %   Detailed explanation goes here

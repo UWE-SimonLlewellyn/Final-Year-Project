@@ -48,7 +48,7 @@ clc
 
 MaxNumTx = 4;
 popSize = 20;
-generations = 50;
+generations = 2;
 cellSpace = 0;
 mutationRate = 1./MaxNumTx; % number between 0.0 and 1.0 
 % calculate scale of diagram

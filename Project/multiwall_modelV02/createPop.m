@@ -49,7 +49,7 @@ function [population, solutionLen, bestSolution] = createPop(gaMode,MaxNumTx,pop
             end
             population(i).tableOfCoOrdinates = tempTable;
         end
-        population(i) = PopSolution(population(i),currentPlanDetails,MaxNumTx);
+        population(i) = Fitness(population(i),currentPlanDetails,MaxNumTx);
         bestSolution = bestSolution.compare(population(i)); %scores durrent fittest
     end
 
