@@ -14,43 +14,43 @@ child1 = parent1;
 child2 = parent2;
 
 %% Crossover
-% % Generates radnom number to crossover point
-% x_over = randi([1,MaxNoTx]);
-% % Loop start at crossove and continues to the end
-% for i = x_over:MaxNoTx
-%     child1.tableOfCoOrdinates(i,:) = parent2.tableOfCoOrdinates(i,:);
-%     child2.tableOfCoOrdinates(i,:) = parent1.tableOfCoOrdinates(i,:);
+% Generates radnom number to crossover point
+x_over = randi([1,MaxNoTx]);
+% Loop start at crossove and continues to the end
+for i = x_over:MaxNoTx
+    child1.tableOfCoOrdinates(i,:) = parent2.tableOfCoOrdinates(i,:);
+    child2.tableOfCoOrdinates(i,:) = parent1.tableOfCoOrdinates(i,:);
+end
+
+% count = MaxNoTx * 2;
+% x_over = randi([1,count]);
+% k = 1;
+% child1gene = zeros(count,1);
+% child2gene = zeros(count,1);
+% for i = 1:MaxNoTx
+%     child1gene(k,1) = parent1.tableOfCoOrdinates(i,1);
+%     child2gene(k,1) = parent2.tableOfCoOrdinates(i,1);
+%     k=k+1;
+%     child1gene(k,1) = parent1.tableOfCoOrdinates(i,2);
+%     child2gene(k,1) = parent2.tableOfCoOrdinates(i,2);
+%     k=k+1;
 % end
-
-count = MaxNoTx * 2;
-x_over = randi([1,count]);
-k = 1;
-child1gene = zeros(count,1);
-child2gene = zeros(count,1);
-for i = 1:MaxNoTx
-    child1gene(k,1) = parent1.tableOfCoOrdinates(i,1);
-    child2gene(k,1) = parent2.tableOfCoOrdinates(i,1);
-    k=k+1;
-    child1gene(k,1) = parent1.tableOfCoOrdinates(i,2);
-    child2gene(k,1) = parent2.tableOfCoOrdinates(i,2);
-    k=k+1;
-end
-
-for i = x_over:count
-    temp =  child1gene(i,1);
-     child1gene(i,1) =  child2gene(i,1);
-      child2gene(i,1) = temp;
-end
-
-k=1;
-for i = 1:MaxNoTx
-    parent1.tableOfCoOrdinates(i,1)= child1gene(k,1);
-    parent2.tableOfCoOrdinates(i,1) = child2gene(k,1);
-    k=k+1;
-    parent1.tableOfCoOrdinates(i,2) = child1gene(k,1);
-    parent2.tableOfCoOrdinates(i,2) = child2gene(k,1);
-    k=k+1;
-end
+% 
+% for i = x_over:count
+%     temp =  child1gene(i,1);
+%      child1gene(i,1) =  child2gene(i,1);
+%       child2gene(i,1) = temp;
+% end
+% 
+% k=1;
+% for i = 1:MaxNoTx
+%     parent1.tableOfCoOrdinates(i,1)= child1gene(k,1);
+%     parent2.tableOfCoOrdinates(i,1) = child2gene(k,1);
+%     k=k+1;
+%     parent1.tableOfCoOrdinates(i,2) = child1gene(k,1);
+%     parent2.tableOfCoOrdinates(i,2) = child2gene(k,1);
+%     k=k+1;
+% end
 
 
 

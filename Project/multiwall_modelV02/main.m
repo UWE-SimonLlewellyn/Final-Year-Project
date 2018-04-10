@@ -46,11 +46,11 @@
 clear all
 clc
 
-MaxNumTx = 4;
-popSize = 20;
-generations = 50;
+MaxNumTx = 6;
+popSize = 50;
+generations = 500;
 cellSpace = 0;
-mutationRate = 1./MaxNumTx; % number between 0.0 and 1.0 
+mutationRate = 1./(MaxNumTx); % number between 0.0 and 1.0 
 % calculate scale of diagram
 pathLength = 1.5; % meters
 pathPixels = 50; % pixles or 
@@ -194,10 +194,12 @@ grid = [GridSize,GridSize];
 tableOfBestSolutions = zeros(generations+1,1);
 %create initial population and score
 [parent,geneLen,tempBestSolution ] = createPop(gaMode,MaxNumTx,popSize,grid,cellSpace,currentPlanDetails);
+% store the fittest soltuion
 tableOfBestSolutions(1) = tempBestSolution.dualFitness;
 bestSolution = Solution;
 for g = 1:generations 
-     [parent,bestOfChildren] = SteadyState(parent,currentPlanDetails,MaxNumTx ,mutationRate);    
+     [parent,bestOfChildren] = SteadyState(parent,currentPlanDetails,MaxNumTx ,mutationRate);   
+     
      if tableOfBestSolutions(g) < bestOfChildren.dualFitness
             tableOfBestSolutions(g+1) = tableOfBestSolutions(g);
      else
