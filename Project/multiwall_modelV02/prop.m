@@ -1,5 +1,11 @@
-% Adapted code made by 
-
+%   Code taken from main file and turn in to fucntion 
+%   Writen by:  Salaheddin Hosseinzadeh (hosseinzadeh.88@gmail.com)
+%               Motley-Keenan (COST 231 Model) & Free Space Path Loss
+%
+%               Code written by Simon Llewellyn for Multi TX solution has 
+%               been marked up with a banner.
+%               Line 36-55 & 106-119
+%               
 
 
 function [meandB,mindB,lossdB] = prop(tableOfTxCoords,currentPlanDetails,MaxNumTx)
@@ -15,24 +21,27 @@ RxAntennaGain           = TxAntennaGain;    % Gain of Receiving antenna
 % Multi-Wall Model Parameters
 d0Cost231               = 1;      % Multi-wall model reference distance
 
-%% Calculating mesh points distance from Tx
-% 
-%
+
 count = 0;
 for i = 1:MaxNumTx
     Txc = tableOfTxCoords(i,1);  
     Txr = tableOfTxCoords(i,2);
     % checks of 0 in grid coords and skips them if present.
     if Txc ~= 0 && Txr ~= 0
+%% Calculating mesh points distance from Tx
+% 
+%
         dRxTxr = currentPlanDetails.Rxr - Txr; % distance in terms of pixels
         dRxTxc = currentPlanDetails.Rxc - Txc; % distance in terms of pixels 
         tempNodeDistance = sqrt(dRxTxr.^2 + dRxTxc.^2) * currentPlanDetails.pathUnit; % distance in terms of meters
 
-        % used to compare the current Tx to node distances againt the previous
-        % placed Txs
-        % seperate counter used for IF as loop itterates over the possible
-        % amount of Tx. If previous IF (Txc ~= 0 && Txr ~= 0) is false
-        % nodeDistance is not assigned.
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Section written by Simon Llewellyn       
+% used to compare the current Tx to node distances againt the previous
+% placed Txs
+% seperate counter used for IF as loop itterates over the possible
+% amount of Tx. If previous IF (Txc ~= 0 && Txr ~= 0) is false
+% nodeDistance is not assigned.
         count = count + 1;
         if count==1
             nodeDistance = tempNodeDistance;
@@ -45,13 +54,15 @@ for i = 1:MaxNumTx
                 end
             end       
         end
+%%%%%%%%%%%%%%%%%%%%%%%%% END SIMON LLEWELLYN %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     end
 end
 
 
 %% Indoor Propagation Models
-% %  COST 231 Model %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+% % COST 231 Model %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Salaheddin Hosseinzadeh (hosseinzadeh.88@gmail.com)
+%   Motley-Keenan (COST 231 Model) & Free Space Path Loss
 
 losTemp = zeros(size(currentPlanDetails.thinFloorPlanBW));
 wallsType = cell(size(currentPlanDetails.Rxr,1),1); % pre-defining
@@ -92,6 +103,11 @@ for h = 1:count
                 + abs(wallLoss);
                 tempLossdB(i) = TxPower - tempLossdB(i) + RxAntennaGain + TxAntennaGain;
 
+ %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ % Added by Simon Llewellyn 
+ %
+ % Section added to allow for multiple Tx in solution.
+ % compares the reading of the lossdB with current 
             if h==1
                 lossdB = tempLossdB;
             elseif h > 1
@@ -100,9 +116,10 @@ for h = 1:count
                 end
             end  
             losTemp = zeros(size(currentPlanDetails.thinFloorPlanBW)); % clears the LOS image
+ %%%%%%%%%%%%%%%%% END SIMON LLEWELLYN %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         end
-end % for h = 1:noOfTx
-
+end % for h = 1:noOfTx - added for 
+%% Simon Llewellyn
 mindB = min(lossdB);
 meandB = sum(lossdB)./numel(currentPlanDetails.Rxr);
 

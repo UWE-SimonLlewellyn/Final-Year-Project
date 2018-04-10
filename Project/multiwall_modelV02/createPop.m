@@ -1,3 +1,7 @@
+% Name:         Simon Llewellyn
+% Student No.:  04971824
+% Project:      Optimisation of Wireless Network Access Point Positioning Using Artificial Intelligence
+
 function [population, solutionLen, bestSolution] = createPop(gaMode,MaxNumTx,popSize,grid, cellSpace,currentPlanDetails)
 %This is for creating a full non binary solutions.
 %CREATEPOP inital random population to intitiate the GA
@@ -32,7 +36,10 @@ function [population, solutionLen, bestSolution] = createPop(gaMode,MaxNumTx,pop
     bestSolution = Solution;
    % k = 1;
     for  i = 1:popSize
-        if gaMode == 1
+        % Uses grid spacing to creat iniital population
+        % Grid spacing it stating that a Tx has to be at least X manhatten
+        % distance away to be valid
+        if gaMode == 1 
             population(i).tableOfCoOrdinates = TxGridSpacing(MaxNumTx, grid(1,1), cellSpace);
         else
             noTx = randi([1,MaxNumTx]);

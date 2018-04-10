@@ -1,3 +1,7 @@
+% Name:         Simon Llewellyn
+% Student No.:  04971824
+% Project:      Optimisation of Wireless Network Access Point Positioning Using Artificial Intelligence
+
 function [parentPop,bestOfChildren] = SteadyState(parentPop,currentPlanDetails,MaxNoTx, mutationRate)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
@@ -9,16 +13,17 @@ parent2 = tournement(parentPop);
 child1 = parent1;
 child2 = parent2;
 
-%X-over
+%% Crossover
+% Generates radnom number to crossover point
 x_over = randi([1,MaxNoTx]);
-
+% Loop start at crossove and continues to the end
 for i = x_over:MaxNoTx
     child1.tableOfCoOrdinates(i,:) = parent2.tableOfCoOrdinates(i,:);
     child2.tableOfCoOrdinates(i,:) = parent1.tableOfCoOrdinates(i,:);
 end
 
 
-%%%     Mutation
+%% Mutation
 % CHILD 1
 for i = 1:MaxNoTx      
     for j = 1:2
@@ -62,48 +67,10 @@ for i = 1:MaxNoTx
 end
 
 
-%Score fitness of children 
-child1 = PopSolution(child1,currentPlanDetails,MaxNoTx);
-child2 = PopSolution(child2,currentPlanDetails,MaxNoTx);
+%% Score fitness of children 
+child1 = Fitness(child1,currentPlanDetails,MaxNoTx);
+child2 = Fitness(child2,currentPlanDetails,MaxNoTx);
 
-temp = Solution;
-% %Compare children to parents
-% for i = 1:2
-%     if parent1.dualFitness > parent2.dualFitness
-%         if child1.dualFitness < child2.dualFitness
-%             if parent1.dualFitness > child1.dualFitness
-%                 temp = parent1;
-%                 parent1 = child1;
-%                 child1 = temp;
-%             end
-%         else 
-%             if parent1.dualFitness > child2.dualFitness
-%                 temp = parent1;
-%                 parent1 = child2;
-%                 child2 = temp;
-%             end
-%         end    
-% 
-%     elseif parent1.dualFitness < parent2.dualFitness
-%         if child1.dualFitness > child2.dualFitness
-%             if parent2.dualFitness > child1.dualFitness
-%                 temp = parent2;
-%                 parent2 = child1;
-%                 child1 = temp;
-%             end         
-%         else 
-%             if parent2.dualFitness > child2.dualFitness
-%                 temp = parent2;
-%                 parent2 = child2;
-%                 child2 = temp;
-%             end
-%         end
-% 
-%     end
-% end
-% 
-% parentPop(a) = parent1;
-% parentPop(b) = parent2;
 
 if child1.dualFitness > child2.dualFitness
     bestOfChildren = child2;
@@ -111,7 +78,7 @@ else
     bestOfChildren = child1;
 end
 
-%replace worst with new soltuion
+%% replace worst in population with best new soltuion
 % worset solution  = largest value 
 index = 0;
 testValue = 0;

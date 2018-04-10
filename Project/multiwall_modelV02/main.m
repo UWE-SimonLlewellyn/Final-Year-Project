@@ -1,19 +1,35 @@
-% mutliwall_modelV02
-% Motley-Keenan (COST 231 Model) & Free Space Path Loss
-% Author: Salaheddin Hosseinzadeh (hosseinzadeh.88@gmail.com)
-% Created on: 18.02.2016
-% Last revision: 30.01.2017
-% Notes:
-%   - Mind the Command Window while running the code, you'll be asked for inputs
-%   - All lines should be straight lines for this to work! (no curves)
-%   - Meshing method is not completed, only use meshingMethod = 2 
-%   - Attenuation is calculated in dB atm!
-%   - To assign attenuation to walls change "wallAtt" in line 72-77 ...
-%   - This code uses imoverlay.mat, by Steven L. Eddins. 
-%   - This code uses bresenham.mat, by Aaron Wetzler.
-%   - Version 01.
-%   - This code requires (imoverlay.m),(shortestPath.m),
-%   (autoWallDetection.m), (bresenham.m) to be present in MATLAB path
+% Name:         Simon Llewellyn
+% Student No.:  04971824
+% Project:      Optimisation of Wireless Network Access Point Positioning Using Artificial Intelligence
+% 
+% Adapted from: Salaheddin Hosseinzadeh (hosseinzadeh.88@gmail.com)
+%               Motley-Keenan (COST 231 Model) & Free Space Path Loss
+% Available from: https://uk.mathworks.com/matlabcentral/fileexchange/61340-multi-wall--cost231----free-space-signal-propagation-models
+%               Code written by Salaheddin has been marked with header
+%               banner
+%
+%
+% Files by Simon Llewellyn:
+%               SteadyState.m   - Steady State gentic algorithm
+%               TxGridSpacing.m - A method of AP placmenet at a minmum
+%                                   manhatten disttace away.
+%               createPop.m     - created the initial population for the GA
+%               Fitness.m       - scores and populates the solution for GA
+%               tournement.m    - takes two solutions and performs tornement selection 
+%               Solution.m      - Class to hold the details for the
+%                                   solution
+%               PropPlan.m      - Class to hold all deatail created by
+%                                 simulator about problem space. To be used
+%                                 in prop.m
+
+
+% Files by Others: 
+%               This simulator uses imoverlay.mat, by Steven L. Eddins. 
+%               This simulator uses bresenham.mat, by Aaron Wetzler.
+%               This simulator uses shortestPath.m, by Salaheddin Hosseinzadeh
+%               This simulator (autoWallDetection.m), by Salaheddin Hosseinzadeh
+%               All file need to be presnt in MATLAB path
+%               All files have not been changed. 
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -30,12 +46,21 @@ mutationRate = 1./MaxNumTx; % number between 0.0 and 1.0
 pathLength = 1.5; % meters
 pathPixels = 50; % pixles or 
 
- gaMode                = 1;        % 0 = random values , 1 = grid spacing initiation
+gaMode                = 1;        % 0 = random values , 1 = grid spacing initiation
  
  
 
 % for distance calculator
 GridSize = 20;
+
+
+%%  Salaheddin Hosseinzadeh %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Reading the image
+% Code written by
+% Converts the images into a 2D array that indicates
+% floorPlan = 0 for wall, 255 for non-wall
+% floorPlanBW = 0/False for non-wal, 1/true for wall
+
 meshNode.vert.num       = 10;             % Number of probs in the structure increase for better accuracy
 meshNode.horz.num       = 10;
 
@@ -57,16 +82,7 @@ wallAt(252) = 6;
 wallAt(255) = round(sum(wallAt)./sum(wallAt>0));  % This is for intersecting walls, just leave it as it is
 
 
-% Added vars for UWE work
-%-------------------------------------------
-
- 
 pathUnit = pathLength./pathPixels; %pathUnit = meter per pixel
-
-%% Reading the image
-% Converts the images into a 2D array that indicates
-% floorPlan = 0 for wall, 255 for non-wall
-% floorPlanBW = 0/False for non-wal, 1/true for wall
 try
     [fileName,filePath] = uigetfile('*.*');
 catch
@@ -99,7 +115,7 @@ thinFloorPlanBW = bwmorph(thinFloorPlanBW,'diag');
 floorPlanBW = ~imdilate(~floorPlanBW,strel('disk',2));
 
 
-%% Meshing the Floor Plan
+% Meshing the Floor Plan
 % Mesh is where plot points are added to the image to to help loss
 % calculations
 floorMesh = zeros(size(floorPlanBW));
@@ -112,8 +128,8 @@ floorMesh(floor(linspace(1,size(floorPlanBW,1),meshNode.vert.num)),...
 
 [floorPlanGray,countedWalls] = autoWallDetection(~originalFloorPlan,wallAt,thetaRes,minWallLength,fillGap); % Detecting all the walls Generates floorPlanGray where different wall are index coded in the gray image
 
-
-%% Creating Grid for placement
+%% SIMION LLEWELLYN %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Creating Grid for placement
 
 % TxGrid hold the start and end cooridantes of the 
 TxGrid = zeros(2, 2, GridSize, GridSize);
@@ -153,7 +169,9 @@ else
         end
     end
 end
-%% Combining all plan details into an object
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Combining all plan details into an object
 
 currentPlanDetails = PropPlan;
 currentPlanDetails = currentPlanDetails.add(floorMesh, pathUnit,thinFloorPlanBW,floorPlanGray,...
@@ -165,36 +183,6 @@ currentPlanDetails = currentPlanDetails.add(floorMesh, pathUnit,thinFloorPlanBW,
 Starttime = now;
 
 grid = [GridSize,GridSize];
-
-%% TEST SPACE
-
-% testSol = Solution;
-% testSol.tableOfCoOrdinates = [0,13;3,20;11,4;0,0;0,0;0,0];
-% 
-% testSol = PopSolution(testSol,currentPlanDetails,MaxNumTx);
-% disp("Tx: " + testSol.noTx + " , MeanDB: " + testSol.meandB + " , Fitness: " +  testSol.dualFitness);
-% 
-% % smallFSPLImage = mesh map values from transmission point
-% smallFSPLImage = (reshape(testSol.nodedBresults,meshNode.vert.num, meshNode.horz.num));
-% % FSPLFullImage -db level for value of singal on the map. 
-% FSPLFullImage = (imresize(smallFSPLImage,[size(floorPlan,1),size(floorPlan,2)],'method','cubic'));
-% % Converts to a num 0.0-1.0 high is the strongest signal
-% FSPLFullImage = mat2gray(FSPLFullImage);
-% figure('Name','Path loss method ');
-% z = imoverlay(FSPLFullImage,~originalFloorPlan,[0,0,0]);
-% imshow(rgb2gray(z))
-% colormap(gca,'jet');
-% 
-% 
-% for i = 1:7
-%     colorbarLabels(i) = min(testSol.nodedBresults) + i .* ((max(testSol.nodedBresults)-min(testSol.nodedBresults))./7);
-% end    
-% colorbar('YTickLabel',num2str(int32(colorbarLabels')));
-% text(testSol.pixelCoOrds(:,1),testSol.pixelCoOrds(:,2),'Tx','Color','Black','FontSize',12);
-% title("final solution: " + testSol.meandB  + "(dbs), number of TX " + testSol.noTx + ", bestDualFitness = " + testSol.dualFitness );
-
-
-%%
 
 tableOfBestSolutions = zeros(generations+1,1);
 %create initial population and score
@@ -232,8 +220,9 @@ end
 disp("Total different in time " + datestr(timedif,'HH:MM:SS.FFF'));
 
 disp("BEST Tx: " + bestSolution.noTx +  " , MeanDB: " + bestSolution.meandB + " , Fitness: " +  bestSolution.dualFitness);
-
-%% Applying color map    
+%%%%%%%%%%%%%%%%%%%%%%% END OF SIMON LLEWELLYN%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  Salaheddin Hosseinzadeh %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Applying color map    
 % smallFSPLImage = mesh map values from transmission point
 smallFSPLImage = (reshape(bestSolution.nodedBresults,meshNode.vert.num, meshNode.horz.num));
 % FSPLFullImage -db level for value of singal on the map. 
@@ -253,7 +242,7 @@ colorbar('YTickLabel',num2str(int32(colorbarLabels')));
 text(finaltable(:,1),finaltable(:,2),'Tx','Color','Black','FontSize',12);
 title("final solution: " + bestSolution.meandB  + "(dbs), number of TX " + bestSolution.noTx + ", bestDualFitness = " + bestSolution.dualFitness );
 
-%%%%%%%%%%%%%%%%5  REFERENCES  %%%%%%%%%%
-%
+%% %%%%%%%%%%%%%%  REFERENCES  %%%%%%%%%%
+% 
 % http://uk.mathworks.com/matlabcentral/fileexchange/28190-bresenham-optimized-for-matlab/content/bresenham.m
 
