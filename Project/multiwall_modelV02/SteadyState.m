@@ -22,6 +22,9 @@ for i = x_over:MaxNoTx
     child2.tableOfCoOrdinates(i,:) = parent1.tableOfCoOrdinates(i,:);
 end
 
+% code to convert table to gene
+% perform Xover
+% return to table
 % count = MaxNoTx * 2;
 % x_over = randi([1,count]);
 % k = 1;

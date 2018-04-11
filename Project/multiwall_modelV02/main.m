@@ -46,11 +46,11 @@
 clear all
 clc
 
-MaxNumTx = 6;
-popSize = 50;
+MaxNumTx = 10;
+popSize = 100;
 generations = 500;
 cellSpace = 0;
-mutationRate = 1./(MaxNumTx); % number between 0.0 and 1.0 
+mutationRate = 0.25; % number between 0.0 and 1.0 
 % calculate scale of diagram
 pathLength = 1.5; % meters
 pathPixels = 50; % pixles or 
@@ -185,7 +185,7 @@ currentPlanDetails = PropPlan;
 currentPlanDetails = currentPlanDetails.add(floorMesh, pathUnit,thinFloorPlanBW,floorPlanGray,...
     wallAt, TxGridCentre,GridSize);
 
-%% Start of the GA
+%%Start of the GA
 %
 Starttime = now;
 
